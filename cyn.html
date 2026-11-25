@@ -167,16 +167,56 @@
 
 <script>
 var attempts = 5;
-var isLocked = false;
+var isScanning = false;
+
+// Проверяем при загрузке страницы, не заблокирован ли ещё пользователь (даже после F5!)
+window.onload = function() {
+    checkLockTimer();
+};
+
+function checkLockTimer() {
+    var unlockTime = localStorage.getItem("cynUnlockTime");
+    var btn = document.getElementById("solverBtn");
+    var box = document.getElementById("solverResult");
+
+    if (unlockTime) {
+        var now = Date.now();
+        var secondsLeft = Math.ceil((unlockTime - now) / 1000);
+
+        if (secondsLeft > 0) {
+            // Ещё заблокировано! Запускаем обратный отсчёт каждую секунду
+            btn.disabled = true;
+            btn.style.backgroundColor = "#555555";
+            btn.style.color = "#cccccc";
+            btn.innerHTML = "БЛОКИРОВКА (" + secondsLeft + " сек.)";
+            box.style.color = "#ff4444";
+            box.innerHTML = "🚨 <b>ТРЕВОГА! Терминал заблокирован! Подожди ещё " + secondsLeft + " сек...</b>";
+
+            setTimeout(checkLockTimer, 1000);
+            return true;
+        } else {
+            // Время вышло! Снимаем блокировку
+            localStorage.removeItem("cynUnlockTime");
+            attempts = 5;
+            btn.disabled = false;
+            btn.style.backgroundColor = "#F7D652";
+            btn.style.color = "#000000";
+            btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
+            box.style.color = "#ffffff";
+            box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
+        }
+    }
+    return false;
+}
 
 function checkSolver() {
-    if (isLocked) return;
+    if (isScanning) return;
+    if (checkLockTimer()) return;
 
     var btn = document.getElementById("solverBtn");
     var box = document.getElementById("solverResult");
 
-    // Блокируем кнопку на 1.5 секунды (идёт сканирование)
-    isLocked = true;
+    isScanning = true;
     btn.disabled = true;
     btn.style.backgroundColor = "#555555";
     btn.style.color = "#cccccc";
@@ -184,6 +224,7 @@ function checkSolver() {
     box.innerHTML = "⏳ Сканирование ядра... Подождите...";
 
     setTimeout(function() {
+        isScanning = false;
         var percent = Math.floor(Math.random() * 101);
         attempts = attempts - 1;
 
@@ -195,24 +236,12 @@ function checkSolver() {
                             "<a href='door.html' style='color:#793EA6;'><b>→ Перейти к Двери №1</b></a>";
             btn.innerHTML = "Система взломана!";
         } else if (attempts <= 0) {
-            // ПОПЫТКИ КОНЧИЛИСЬ — БЛОКИРОВКА НА 10 СЕКУНД
-            box.style.color = "#ff4444";
-            box.innerHTML = "Уровень Solver: <b>" + percent + "%</b>.<br>🚨 <b>ТРЕВОГА! Попытки исчерпаны! Терминал заблокирован на 10 секунд...</b>";
-            btn.innerHTML = "БЛОКИРОВКА (10 сек.)";
-
-            setTimeout(function() {
-                attempts = 5;
-                isLocked = false;
-                btn.disabled = false;
-                btn.style.backgroundColor = "#F7D652";
-                btn.style.color = "#000000";
-                btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
-                box.style.color = "#ffffff";
-                box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
-            }, 10000);
+            // ЗАПИСЫВАЕМ В ПАМЯТЬ БРАУЗЕРА БЛОКИРОВКУ НА 10 СЕКУНД (10000 мс)
+            var unlockAt = Date.now() + 10000;
+            localStorage.setItem("cynUnlockTime", unlockAt);
+            checkLockTimer();
         } else {
-            // ОБЫЧНЫЙ КУЛДАУН ПРОШЁЛ, ОСТАЛИСЬ ПОПЫТКИ
-            isLocked = false;
+            // ОБЫЧНЫЙ ПРОМАХ — ВОЗВРАЩАЕМ КНОПКУ В РАБОТУ
             btn.disabled = false;
             btn.style.backgroundColor = "#F7D652";
             btn.style.color = "#000000";
@@ -228,9 +257,12 @@ var mangoes = 0;
 var phrases = [
     "[Хихикает] Вкусное манго!",
     "Сверхвычислитель доволен. Давай ещё.",
-    "*Криповый смешок* Ням-ням.",
+    "[Криповый смешок] Ням-ням.",
     "Почти передумала уничтожать Медно-9!",
     "Хан бы это не одобрил. [Улыбается]"
+    "Обожаю Манго. [Хихикает]"
+    "Я бы попробовала ето с Человеченой. [Криповый смешок]"
+    "Я бы попробовала ето с Маслом. [смешок]"
 ];
 
 function feedMango() {
@@ -239,6 +271,7 @@ function feedMango() {
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
 }
 </script>
+
 
 
 
