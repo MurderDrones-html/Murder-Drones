@@ -91,6 +91,78 @@
     </p>
 
     <hr>
+    <br>
+
+<!-- ИНТЕРАКТИВНЫЙ БЛОК СИН: ДЕТЕКТОР SOLVER + МАНГО -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+
+    <p style="font-size:20px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
+        <b>&nbsp;ТЕРМИНАЛ СВЕРХВЫЧИСЛИТЕЛЯ (SOLVER)&nbsp;</b>
+    </p>
+
+    <p style="font-size:15px;color:#ffffff;font-family:arial;">
+        Проверь свой уровень заражения Solver. Говорят, при критическом уровне система даёт доступ к Двери №1...
+    </p>
+
+    <!-- КНОПКА ПРОВЕРКИ SOLVER -->
+    <button onclick="checkSolver()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Проверить уровень Solver
+    </button>
+
+    <!-- СЮДА ВЫВОДИТСЯ РЕЗУЛЬТАТ И ПАРОЛЬ -->
+    <p id="solverResult" style="font-size:18px;color:#F7D652;font-family:arial;margin-top:15px;"></p>
+
+    <hr>
+
+    <!-- КНОПКА ПОКОРМИТЬ МАНГО -->
+    <button onclick="feedMango()" style="background-color:#793EA6;color:#F7D652;font-size:14px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
+        Покормить Син манго 🥭
+    </button>
+    <p id="mangoText" style="font-size:15px;color:#ffffff;font-family:arial;margin-top:10px;">
+        Съедено манго: 0
+    </p>
+
+</td>
+</tr>
+</table>
+
+<script>
+// Функция проверки уровня Solver
+function checkSolver() {
+    // Генерируем случайное число от 0 до 100
+    var percent = Math.floor(Math.random() * 101);
+    var box = document.getElementById("solverResult");
+
+    if (percent >= 80) {
+        box.style.color = "#ff4444";
+        box.innerHTML = "⚠️ ВНИМАНИЕ! Уровень Solver: <b>" + percent + "%</b>! [Хихикает]<br>" +
+                        "<span style='color:#F7D652;'>Доступ взломан! Секретный пароль от Двери №1: <b>MANGO-001</b></span><br>" +
+                        "<a href='door.html' style='color:#793EA6;'><b>→ Перейти к Двери №1</b></a>";
+    } else {
+        box.style.color = "#ffffff";
+        box.innerHTML = "Уровень Solver: <b>" + percent + "%</b>. Слишком мало для взлома бункера. Попробуй ещё раз!";
+    }
+}
+
+// Счётчик манго
+var mangoes = 0;
+var phrases = [
+    "[Хихикает] Вкусное манго!",
+    "Сверхвычислитель доволен. Давай ещё.",
+    "*Криповый смешок* Ням-ням.",
+    "Почти передумала уничтожать Медно-9!",
+    "Хан бы это не одобрил. [Улыбается]"
+];
+
+function feedMango() {
+    mangoes = mangoes + 1;
+    var randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
+}
+</script>
+
 
     <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;">
         <b>&nbsp;Влияние на дронов&nbsp;</b>
