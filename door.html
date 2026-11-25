@@ -42,6 +42,64 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+
+    <p style="font-size:20px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
+        <b>&nbsp;ПАНЕЛЬ УПРАВЛЕНИЯ ДВЕРЬЮ №1 (JCJENSON)&nbsp;</b>
+    </p>
+
+    <p style="font-size:15px;color:#ffffff;font-family:arial;">
+        Дверь герметично закрыта по приказу Хана Доормана.<br>
+        Чтобы открыть её, введи секретный код взлома (ищи у Син):
+    </p>
+
+    <!-- ПОЛЕ ВВОДА ПАРОЛЯ И КНОПКА -->
+    <input type="text" id="doorPassword" placeholder="Введи пароль..." style="padding:10px;font-size:16px;font-family:arial;">
+    <button onclick="openDoor()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
+        ОТКРЫТЬ ДВЕРЬ
+    </button>
+
+    <p id="doorStatus" style="font-size:16px;color:#ff4444;font-family:arial;margin-top:15px;"></p>
+
+    <!-- СЕКРЕТНЫЙ БЛОК (СКРЫТ, ПОКА НЕ ВВЕДЁН ПАРОЛЬ) -->
+    <div id="secretBunker" style="display:none;background-color:#13151d;border:2px solid #F7D652;padding:20px;margin-top:15px;">
+        <p style="font-size:24px;color:#F7D652;font-family:arial;">
+            <b>🔓 ДВЕРЬ №1 ОТКРЫТА! ДОБРО ПОЖАЛОВАТЬ В СЕКРЕТНЫЙ БУНКЕР!</b>
+        </p>
+        <p style="font-size:16px;color:#ffffff;font-family:arial;">
+            Хан в шоке, как ты это сделал! Ты официально взломал защиту Аванпоста 3.<br><br>
+            <i>Напиши в наш Discord секретное слово <b>«Я ВЗЛОМАЛ ДВЕРЬ»</b>, чтобы остальные знали, что ты прошёл квест!</i>
+        </p>
+        <!-- Сюда можно поставить секретную картинку или мем: -->
+        <!-- <img src="secret.png" width="300"> -->
+    </div>
+
+</td>
+</tr>
+</table>
+
+<script>
+function openDoor() {
+    // Берем текст из поля ввода и переводим в большие буквы (чтобы сработало и mango-001, и MANGO-001)
+    var input = document.getElementById("doorPassword").value.toUpperCase().trim();
+    var status = document.getElementById("doorStatus");
+    var secret = document.getElementById("secretBunker");
+
+    if (input === "MANGO-001") {
+        status.innerHTML = "";
+        secret.style.display = "block";
+    } else {
+        secret.style.display = "none";
+        status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
+    }
+}
+</script>
+
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
