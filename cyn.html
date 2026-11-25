@@ -129,8 +129,7 @@
 </table>
 <br>
 
-<!-- ИНТЕРАКТИВНЫЙ БЛОК СИН: ДЕТЕКТОР SOLVER С ЗАЩИТОЙ + МАНГО -->
-<<!-- ИНТЕРАКТИВНЫЙ БЛОК СИН -->
+<!-- ИНТЕРАКТИВНЫЙ БЛОК СИН -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -141,7 +140,7 @@
 
     <p style="font-size:15px;color:#ffffff;font-family:arial;">
         Проверь свой уровень заражения Solver. Доступ к Двери №1 откроется только при уровне <b>от 95%</b>!<br>
-        <small style="color:#aaaaaa;">(Блокировка на 10 сек. после 5 неудачных попыток — перезагрузка страницы не поможет)</small>
+        <small style="color:#aaaaaa;">(Блокировка на 10 сек. после 5 неудачных попыток)</small>
     </p>
 
     <button id="solverBtn" onclick="checkSolver()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
@@ -169,46 +168,8 @@ var attempts = 5;
 var isScanning = false;
 var mangoes = 0;
 
-function checkLockTimer() {
-    var unlockTime = localStorage.getItem("cynUnlockTime");
-    var btn = document.getElementById("solverBtn");
-    var box = document.getElementById("solverResult");
-
-    if (unlockTime) {
-        var secondsLeft = Math.ceil((Number(unlockTime) - Date.now()) / 1000);
-
-        if (secondsLeft > 0) {
-            btn.disabled = true;
-            btn.style.backgroundColor = "#555555";
-            btn.style.color = "#cccccc";
-            btn.innerHTML = "БЛОКИРОВКА (" + secondsLeft + " сек.)";
-            box.style.color = "#ff4444";
-            box.innerHTML = "🚨 <b>ТРЕВОГА! Терминал заблокирован! Подожди ещё " + secondsLeft + " сек...</b>";
-            setTimeout(checkLockTimer, 1000);
-            return true;
-        } else {
-            localStorage.removeItem("cynUnlockTime");
-            attempts = 5;
-            btn.disabled = false;
-            btn.style.backgroundColor = "#F7D652";
-            btn.style.color = "#000000";
-            btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
-            box.style.color = "#ffffff";
-            box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
-        }
-    }
-    return false;
-}
-
-checkLockTimer();
-
 function checkSolver() {
-    if (isScanning) {
-        return;
-    }
-    if (checkLockTimer()) {
-        return;
-    }
+    if (isScanning) return;
 
     var btn = document.getElementById("solverBtn");
     var box = document.getElementById("solverResult");
@@ -221,7 +182,6 @@ function checkSolver() {
     box.innerHTML = "⏳ Сканирование ядра... Подождите...";
 
     setTimeout(function() {
-        isScanning = false;
         var percent = Math.floor(Math.random() * 101);
         attempts = attempts - 1;
 
@@ -232,9 +192,22 @@ function checkSolver() {
                             "<a href='door.html' style='color:#793EA6;'><b>→ Перейти к Двери №1</b></a>";
             btn.innerHTML = "Система взломана!";
         } else if (attempts <= 0) {
-            localStorage.setItem("cynUnlockTime", Date.now() + 10000);
-            checkLockTimer();
+            box.style.color = "#ff4444";
+            box.innerHTML = "Уровень Solver: <b>" + percent + "%</b>.<br>🚨 <b>ТРЕВОГА! Попытки исчерпаны! Терминал заблокирован на 10 секунд...</b>";
+            btn.innerHTML = "БЛОКИРОВКА (10 сек.)";
+
+            setTimeout(function() {
+                attempts = 5;
+                isScanning = false;
+                btn.disabled = false;
+                btn.style.backgroundColor = "#F7D652";
+                btn.style.color = "#000000";
+                btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
+                box.style.color = "#ffffff";
+                box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
+            }, 10000);
         } else {
+            isScanning = false;
             btn.disabled = false;
             btn.style.backgroundColor = "#F7D652";
             btn.style.color = "#000000";
@@ -259,8 +232,6 @@ function feedMango() {
     mangoes = mangoes + 1;
     var randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
-}
-
 }
 </script>
 
