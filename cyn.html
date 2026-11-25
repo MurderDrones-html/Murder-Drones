@@ -164,12 +164,65 @@
 </table>
 
 <script>
-var attempts = 5;
 var isScanning = false;
 var mangoes = 0;
 
+// Загружаем сохранённые попытки из памяти браузера (если их нет — ставим 5)
+var savedAttempts = localStorage.getItem("cynAttempts");
+var attempts = (savedAttempts !== null) ? Number(savedAttempts) : 5;
+
+function updateButtonText() {
+    var btn = document.getElementById("solverBtn");
+    if (btn && !btn.disabled) {
+        btn.innerHTML = "Проверить уровень Solver (Попыток: " + attempts + "/5)";
+    }
+}
+
+function runLockCountdown() {
+    var unlockTime = localStorage.getItem("cynUnlockTime");
+    var btn = document.getElementById("solverBtn");
+    var box = document.getElementById("solverResult");
+
+    if (!unlockTime) return false;
+
+    var secondsLeft = Math.ceil((Number(unlockTime) - Date.now()) / 1000);
+
+    if (secondsLeft > 0) {
+        isScanning = true;
+        btn.disabled = true;
+        btn.style.backgroundColor = "#555555";
+        btn.style.color = "#cccccc";
+        btn.innerHTML = "БЛОКИРОВКА (" + secondsLeft + " сек.)";
+        box.style.color = "#ff4444";
+        box.innerHTML = "🚨 <b>ТРЕВОГА! Попытки исчерпаны! Терминал заблокирован на " + secondsLeft + " сек...</b>";
+
+        // Обновляем цифру на кнопке каждую секунду
+        setTimeout(runLockCountdown, 1000);
+        return true;
+    } else {
+        // Время вышло — очищаем сейв и восстанавливаем 5 попыток
+        localStorage.removeItem("cynUnlockTime");
+        attempts = 5;
+        localStorage.setItem("cynAttempts", attempts);
+        isScanning = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#F7D652";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
+        box.style.color = "#ffffff";
+        box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
+        return false;
+    }
+}
+
+// Сразу при открытии или обновлении страницы проверяем сейв и таймер
+if (!runLockCountdown()) {
+    updateButtonText();
+}
+
 function checkSolver() {
     if (isScanning) return;
+    if (runLockCountdown()) return;
 
     var btn = document.getElementById("solverBtn");
     var box = document.getElementById("solverResult");
@@ -184,28 +237,20 @@ function checkSolver() {
     setTimeout(function() {
         var percent = Math.floor(Math.random() * 101);
         attempts = attempts - 1;
+        localStorage.setItem("cynAttempts", attempts);
 
         if (percent >= 95) {
+            // Победа! Сбрасываем счётчик попыток для будущих игр
+            localStorage.removeItem("cynAttempts");
             box.style.color = "#ff4444";
             box.innerHTML = "⚠️ КРИТИЧЕСКИЙ СБОЙ! Уровень Solver: <b>" + percent + "%</b>! [Хихикает]<br>" +
                             "<span style='color:#F7D652;'>Доступ взломан! Секретный пароль от Двери №1: <b>MANGO-001</b></span><br>" +
                             "<a href='door.html' style='color:#793EA6;'><b>→ Перейти к Двери №1</b></a>";
             btn.innerHTML = "Система взломана!";
         } else if (attempts <= 0) {
-            box.style.color = "#ff4444";
-            box.innerHTML = "Уровень Solver: <b>" + percent + "%</b>.<br>🚨 <b>ТРЕВОГА! Попытки исчерпаны! Терминал заблокирован на 10 секунд...</b>";
-            btn.innerHTML = "БЛОКИРОВКА (10 сек.)";
-
-            setTimeout(function() {
-                attempts = 5;
-                isScanning = false;
-                btn.disabled = false;
-                btn.style.backgroundColor = "#F7D652";
-                btn.style.color = "#000000";
-                btn.innerHTML = "Проверить уровень Solver (Попыток: 5/5)";
-                box.style.color = "#ffffff";
-                box.innerHTML = "Блокировка снята. Можешь попробовать снова!";
-            }, 10000);
+            // Записываем точное время разблокировки (+10 секунд) в память браузера
+            localStorage.setItem("cynUnlockTime", Date.now() + 10000);
+            runLockCountdown();
         } else {
             isScanning = false;
             btn.disabled = false;
@@ -234,6 +279,7 @@ function feedMango() {
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
 }
 </script>
+
 
 
 
