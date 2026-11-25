@@ -130,6 +130,7 @@
 <br>
 
 <!-- ИНТЕРАКТИВНЫЙ БЛОК СИН: ДЕТЕКТОР SOLVER С ЗАЩИТОЙ + МАНГО -->
+<<!-- ИНТЕРАКТИВНЫЙ БЛОК СИН -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -140,23 +141,21 @@
 
     <p style="font-size:15px;color:#ffffff;font-family:arial;">
         Проверь свой уровень заражения Solver. Доступ к Двери №1 откроется только при уровне <b>от 95%</b>!<br>
-        <small style="color:#aaaaaa;">(Внимание: система безопасности блокирует терминал на 10 сек. после 5 неудачных попыток)</small>
+        <small style="color:#aaaaaa;">(Блокировка на 10 сек. после 5 неудачных попыток — перезагрузка страницы не поможет)</small>
     </p>
 
-    <!-- КНОПКА ПРОВЕРКИ SOLVER -->
     <button id="solverBtn" onclick="checkSolver()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
         Проверить уровень Solver (Попыток: 5/5)
     </button>
 
-    <!-- СЮДА ВЫВОДИТСЯ РЕЗУЛЬТАТ И ПАРОЛЬ -->
     <p id="solverResult" style="font-size:18px;color:#F7D652;font-family:arial;margin-top:15px;"></p>
 
     <hr>
 
-    <!-- КНОПКА ПОКОРМИТЬ МАНГО -->
     <button onclick="feedMango()" style="background-color:#793EA6;color:#F7D652;font-size:14px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
         Покормить Син манго 🥭
     </button>
+
     <p id="mangoText" style="font-size:15px;color:#ffffff;font-family:arial;margin-top:10px;">
         Съедено манго: 0
     </p>
@@ -168,11 +167,7 @@
 <script>
 var attempts = 5;
 var isScanning = false;
-
-// Проверяем при загрузке страницы, не заблокирован ли ещё пользователь (даже после F5!)
-window.onload = function() {
-    checkLockTimer();
-};
+var mangoes = 0;
 
 function checkLockTimer() {
     var unlockTime = localStorage.getItem("cynUnlockTime");
@@ -180,22 +175,18 @@ function checkLockTimer() {
     var box = document.getElementById("solverResult");
 
     if (unlockTime) {
-        var now = Date.now();
-        var secondsLeft = Math.ceil((unlockTime - now) / 1000);
+        var secondsLeft = Math.ceil((Number(unlockTime) - Date.now()) / 1000);
 
         if (secondsLeft > 0) {
-            // Ещё заблокировано! Запускаем обратный отсчёт каждую секунду
             btn.disabled = true;
             btn.style.backgroundColor = "#555555";
             btn.style.color = "#cccccc";
             btn.innerHTML = "БЛОКИРОВКА (" + secondsLeft + " сек.)";
             box.style.color = "#ff4444";
             box.innerHTML = "🚨 <b>ТРЕВОГА! Терминал заблокирован! Подожди ещё " + secondsLeft + " сек...</b>";
-
             setTimeout(checkLockTimer, 1000);
             return true;
         } else {
-            // Время вышло! Снимаем блокировку
             localStorage.removeItem("cynUnlockTime");
             attempts = 5;
             btn.disabled = false;
@@ -209,9 +200,15 @@ function checkLockTimer() {
     return false;
 }
 
+checkLockTimer();
+
 function checkSolver() {
-    if (isScanning) return;
-    if (checkLockTimer()) return;
+    if (isScanning) {
+        return;
+    }
+    if (checkLockTimer()) {
+        return;
+    }
 
     var btn = document.getElementById("solverBtn");
     var box = document.getElementById("solverResult");
@@ -229,19 +226,15 @@ function checkSolver() {
         attempts = attempts - 1;
 
         if (percent >= 95) {
-            // ПОБЕДА!
             box.style.color = "#ff4444";
             box.innerHTML = "⚠️ КРИТИЧЕСКИЙ СБОЙ! Уровень Solver: <b>" + percent + "%</b>! [Хихикает]<br>" +
                             "<span style='color:#F7D652;'>Доступ взломан! Секретный пароль от Двери №1: <b>MANGO-001</b></span><br>" +
                             "<a href='door.html' style='color:#793EA6;'><b>→ Перейти к Двери №1</b></a>";
             btn.innerHTML = "Система взломана!";
         } else if (attempts <= 0) {
-            // ЗАПИСЫВАЕМ В ПАМЯТЬ БРАУЗЕРА БЛОКИРОВКУ НА 10 СЕКУНД (10000 мс)
-            var unlockAt = Date.now() + 10000;
-            localStorage.setItem("cynUnlockTime", unlockAt);
+            localStorage.setItem("cynUnlockTime", Date.now() + 10000);
             checkLockTimer();
         } else {
-            // ОБЫЧНЫЙ ПРОМАХ — ВОЗВРАЩАЕМ КНОПКУ В РАБОТУ
             btn.disabled = false;
             btn.style.backgroundColor = "#F7D652";
             btn.style.color = "#000000";
@@ -252,25 +245,25 @@ function checkSolver() {
     }, 1500);
 }
 
-// Счётчик манго
-var mangoes = 0;
-var phrases = [
-    "[Хихикает] Вкусное манго!",
-    "Сверхвычислитель доволен. Давай ещё.",
-    "[Криповый смешок] Ням-ням.",
-    "Почти передумала уничтожать Медно-9!",
-    "Хан бы это не одобрил. [Улыбается]"
-    "Обожаю Манго. [Хихикает]"
-    "Я бы попробовала ето с Человеченой. [Криповый смешок]"
-    "Я бы попробовала ето с Маслом. [смешок]"
-];
-
 function feedMango() {
+    var phrases = [
+        "[Хихикает] Вкусное манго!",
+        "Сверхвычислитель доволен. Давай ещё.",
+        "[Криповый смешок] Ням-ням.",
+        "Почти передумала уничтожать Медно-9!",
+        "Хан бы это не одобрил. [Улыбается]",
+        "Обожаю Манго. [Хихикает]",
+        "Я бы попробовала ето с Человеченой. [Криповый смешок]",
+        "Я бы попробовала ето с Маслом. [смешок]"
+    ];
     mangoes = mangoes + 1;
     var randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
 }
+
+}
 </script>
+
 
 
 
