@@ -164,7 +164,7 @@
 </table>
 
 <script>
-// Загружаем сохранённое количество пузырей из памяти браузера
+var vSound = new Audio("v.mp3");
 var vBubbles = Number(localStorage.getItem("vBubblesCount")) || 0;
 var vTxt = document.getElementById("vBubbleText");
 
@@ -176,6 +176,9 @@ if (vBubbles >= 12) {
 }
 
 function blowBubble() {
+    // ИГРАЕМ ЗВУК ЛОПАЮЩЕГОСЯ ПУЗЫРЯ!
+    try { vSound.currentTime = 0; vSound.play(); } catch (e) {}
+
     var vPhrases = [
         "Ви: «Мы все тут абсолютно спокойные. *Щёлкает когтями*»",
         "Ви: «Смотри, какой ровный пузырь... *Лопает его когтем*»",
@@ -200,6 +203,7 @@ function blowBubble() {
     }
 }
 </script>
+
 
 <br><br>
 <div align="left">
