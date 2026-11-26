@@ -43,6 +43,75 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАСХАЛКА ЕВЫ: ТЕТРИС С ПОКЕРФЕЙСОМ -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#ffffff;background-color:#b30000;font-family:arial;padding:8px;">
+        <b>&nbsp;🧱 ТЕТРИС ОБЪЕКТА 048 (ЕВА)&nbsp;</b>
+    </p>
+    <p id="yevaText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Собрано линий в Тетрисе: <b>0</b> / 10
+    </p>
+    <button id="yevaBtn" type="button" onclick="playYevaTetris()" style="background-color:#ff3333;color:#ffffff;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+        Опустить длинную палку 🧱
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+var yevaLines = Number(localStorage.getItem("yevaTetrisLines")) || 0;
+var isYevaBusy = false;
+var yTxt = document.getElementById("yevaText");
+
+if (yevaLines >= 10) {
+    yTxt.style.color = "#F7D652";
+    yTxt.innerHTML = "🏆 Собрано линий: <b>" + yevaLines + "</b> — <i>Ева: *Молча кивает с абсолютно невозмутимым лицом и даёт тебе распятие-флешку* ✝️</i>";
+} else if (yevaLines > 0) {
+    yTxt.innerHTML = "Собрано линий в Тетрисе: <b>" + yevaLines + "</b> / 10";
+}
+
+function playYevaTetris() {
+    if (isYevaBusy) return;
+    isYevaBusy = true;
+
+    var btn = document.getElementById("yevaBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.innerHTML = "Падает кубик... 🟦";
+
+    var yevaPhrases = [
+        "Ева: *Смотрит в экран с абсолютным покерфейсом* [ТЕТРИС!]",
+        "Ева: *Нори рядом кричит от восторга, а Ева даже не моргнула*",
+        "Ева: *Пьёт машинное масло из кружки, не отрываясь от игры*",
+        "Ева: *Скорость уровня повышена до максимума — лицо без эмоций*",
+        "Ева: *На экране визора загорелся символ [048]*"
+    ];
+
+    yevaLines++;
+    localStorage.setItem("yevaTetrisLines", yevaLines);
+
+    if (yevaLines >= 10) {
+        yTxt.style.color = "#F7D652";
+        yTxt.innerHTML = "🏆 Собрано линий: <b>" + yevaLines + "</b> — <i>Ева: *Молча кивает с абсолютно невозмутимым лицом и даёт тебе распятие-флешку* ✝️</i>";
+    } else {
+        var line = yevaPhrases[Math.floor(Math.random() * yevaPhrases.length)];
+        yTxt.style.color = "#ffffff";
+        yTxt.innerHTML = "Собрано линий в Тетрисе: <b>" + yevaLines + "</b> / 10<br><i>" + line + "</i>";
+    }
+
+    setTimeout(function() {
+        isYevaBusy = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#ff3333";
+        btn.innerHTML = "Опустить длинную палку 🧱";
+    }, 900);
+}
+</script>
+
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
