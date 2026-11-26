@@ -165,7 +165,9 @@
 
 <script>
 var isScanning = false;
-var mangoes = 0;
+var mangoes = Number(localStorage.getItem("cynFedMangoes")) || 0;
+document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b>";
+
 
 // Загружаем сохранённые попытки из памяти браузера (если их нет — ставим 5)
 var savedAttempts = localStorage.getItem("cynAttempts");
@@ -262,7 +264,7 @@ function checkSolver() {
         }
     }, 1500);
 }
-
+    
 function feedMango() {
     var phrases = [
         "[Хихикает] Вкусное манго!",
@@ -271,10 +273,13 @@ function feedMango() {
         "Почти передумала уничтожать Медно-9!",
         "Хан бы это не одобрил. [Улыбается]",
         "Обожаю Манго. [Хихикает]",
-        "Я бы попробовала Манго с Человеченой. [Криповый смешок]",
-        "Я бы попробовала Манго с Маслом. [смешок]"
+        "Я бы попробовала ето с Человеченой. [Криповый смешок]",
+        "Я бы попробовала ето с Маслом. [смешок]"
     ];
     mangoes = mangoes + 1;
+    // Сохраняем новое число в память браузера
+    localStorage.setItem("cynFedMangoes", mangoes);
+
     var randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
 }
