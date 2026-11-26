@@ -20,7 +20,23 @@
 <hr>
 
 <h1><p style="font-size:55px;color:#F7D652;font-family:arial;">Учитель (Teacher)</p></h1>
-<img src="teacher.jpg" width="300">
+<!-- КАРТИНКА УЧИТЕЛЯ С СЕКРЕТОМ (5 КЛИКОВ ПО ФОТО) -->
+<img src="teacher.jpg" width="300" onclick="tapTeacher()" style="cursor:pointer;" title="Задать вопрос Учителю">
+<p id="teacherSecret" style="font-size:16px;color:#F7D652;font-family:arial;margin-top:10px;"></p>
+
+<script>
+var teacherTaps = 0;
+function tapTeacher() {
+    teacherTaps++;
+    var box = document.getElementById("teacherSecret");
+    if (teacherTaps === 5) {
+        box.innerHTML = "😐 <b>Учитель:</b> <i>«Урок окончен. Мне всё равно, даже если планета взорвётся. Иди в Discord.»</i>";
+    } else if (teacherTaps < 5) {
+        box.innerHTML = "<small style='color:#aaaaaa;'>Учитель молча смотрит на тебя... (" + teacherTaps + "/5)</small>";
+    }
+}
+</script>
+
 <br><br>
 
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="151824">
