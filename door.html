@@ -45,6 +45,7 @@
     <br>
 
 <!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
+<!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -55,59 +56,180 @@
 
     <p style="font-size:15px;color:#ffffff;font-family:arial;">
         Дверь герметично закрыта по приказу Хана Доормана.<br>
-        Чтобы открыть её, введи секретный код взлома:
+        Чтобы открыть её, введи секретный код взлома (ищи у Син):
     </p>
 
-    <!-- ПОЛЕ ВВОДА ПАРОЛЯ И КНОПКА -->
     <input type="text" id="doorPassword" placeholder="Введи пароль..." style="padding:10px;font-size:16px;font-family:arial;">
-    <button onclick="openDoor()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
+    <button type="button" onclick="openDoor()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
         ОТКРЫТЬ ДВЕРЬ
     </button>
 
     <p id="doorStatus" style="font-size:16px;color:#ff4444;font-family:arial;margin-top:15px;"></p>
 
-    <!-- СЕКРЕТНЫЙ БЛОК (СКРЫТ, ПОКА НЕ ВВЕДЁН ПАРОЛЬ) -->
-      <!-- СЕКРЕТНЫЙ БЛОК (ОТКРЫВАЕТСЯ ПОСЛЕ ВВОДА ПАРОЛЯ MANGO-001) -->
-    <!-- СЕКРЕТНЫЙ БУНКЕР С МИНИ-ИГРОЙ В СТИЛЕ ПОМЕСТЬЯ -->
-<div id="secretBunker" style="display:none;background-color:#181016;border:2px solid #d4af37;padding:20px;margin-top:15px;">
-    <p style="font-size:22px;color:#F7D652;font-family:Georgia, serif;">
-        <b>🔓 ДВЕРЬ №1 ОТКРЫТА! ИСПЫТАНИЕ ПОМЕСТЬЯ ЭЛЛИОТТ</b>
-    </p>
-    <p style="font-size:15px;color:#ffffff;font-family:arial;">
-        Помоги Син собрать <b>100 манго</b> на серебряный поднос, чтобы открыть главный секрет!
-    </p>
-
-    <p style="font-size:18px;color:#F7D652;font-family:arial;">
-        Собрано: <b id="gScore">0</b> / 100 🥭 &nbsp;|&nbsp; <span style="color:#ff5555;">Разбито: <b id="gMiss">0</b> / 3</span>
-    </p>
-
-    <canvas id="manorGame" width="560" height="340" style="background-color:#140c12;border:3px solid #d4af37;"></canvas>
-    <br><br>
-
-    <!-- КНОПКИ УПРАВЛЕНИЯ (Q, A, E, D) -->
-    <button type="button" onclick="p=0" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↖ Q</button>
-    <button type="button" onclick="p=1" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↙ A</button>
-    <button type="button" onclick="p=2" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↗ E</button>
-    <button type="button" onclick="p=3" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↘ D</button>
-    <br><br>
-
-    <button type="button" onclick="runGame()" style="padding:12px 25px;background:#F7D652;color:#000;font-weight:bold;border:none;cursor:pointer;font-size:16px;">
-        НАЧАТЬ ИГРУ
-    </button>
-
-    <!-- НАГРАДА ЗА ПОБЕДУ (СКРЫТА ДО 100 МАНГО) -->
-    <div id="winPrize" style="display:none;margin-top:20px;border-top:2px solid #F7D652;padding-top:15px;">
-        <p style="font-size:22px;color:#F7D652;font-family:arial;">
-            <b>🏆 ПОБЕДА! ТЫ СОБРАЛ 100 МАНГО ДЛЯ СИН! [Хихикает]</b>
+    <!-- СЕКРЕТНЫЙ БУНКЕР С ИГРОЙ -->
+    <div id="secretBunker" style="display:none;background-color:#181016;border:2px solid #d4af37;padding:20px;margin-top:15px;">
+        <p style="font-size:22px;color:#F7D652;font-family:Georgia, serif;">
+            <b>🔓 ДВЕРЬ №1 ОТКРЫТА! ИСПЫТАНИЕ ПОМЕСТЬЯ ЭЛЛИОТТ</b>
         </p>
-        <img src="secret.png" width="480" style="border:2px solid #F7D652;">
-        <p style="font-size:15px;color:#ffffff;font-family:arial;margin-top:10px;">
-            Напиши Манго в наш Discord, чтобы все знали, что ты прошёл испытание на 100%!
+        <p id="modeText" style="font-size:15px;color:#ffffff;font-family:arial;">
+            Цель: помоги Син собрать <b>100 манго</b>, чтобы открыть концовку!
         </p>
+
+        <p style="font-size:18px;color:#F7D652;font-family:arial;">
+            Собрано: <b id="gScore">0</b><span id="gGoal">/100</span> 🥭 &nbsp;|&nbsp;
+            Личный рекорд: <b id="gBest">0</b> &nbsp;|&nbsp;
+            <span style="color:#ff5555;">Разбито: <b id="gMiss">0</b>/3</span>
+        </p>
+
+        <canvas id="manorGame" width="560" height="340" style="background-color:#140c12;border:3px solid #d4af37;"></canvas>
+        <br><br>
+
+        <button type="button" onclick="p=0" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↖ Q</button>
+        <button type="button" onclick="p=1" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↙ A</button>
+        <button type="button" onclick="p=2" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↗ E</button>
+        <button type="button" onclick="p=3" style="padding:10px 15px;background:#3b1d2a;color:#F7D652;border:1px solid #d4af37;cursor:pointer;">↘ D</button>
+        <br><br>
+
+        <button type="button" id="gameStartBtn" onclick="runGame()" style="padding:12px 25px;background:#F7D652;color:#000;font-weight:bold;border:none;cursor:pointer;font-size:16px;">
+            НАЧАТЬ ИГРУ
+        </button>
+
+        <!-- СЕКРЕТНАЯ КОНЦОВКА (ОТКРЫВАЕТСЯ НА 100 МАНГО) -->
+        <div id="winPrize" style="display:none;margin-top:20px;border-top:2px solid #F7D652;padding-top:15px;">
+            <p style="font-size:22px;color:#F7D652;font-family:arial;">
+                <b>🏆 КОНЦОВКА ОТКРЫТА! СИН В РАЮ ИЗ МАНГО! [Хихикает]</b>
+            </p>
+            <img src="secret.png" width="480" style="border:2px solid #F7D652;">
+            <p style="font-size:15px;color:#ffffff;font-family:arial;margin-top:10px;">
+                Теперь тебе доступен <b>БЕСКОНЕЧНЫЙ РЕЖИМ</b>! Нажми кнопку старта выше, чтобы побить рекорд сервера!
+            </p>
+        </div>
     </div>
-</div>
 
+</td>
+</tr>
+</table>
+
+<br>
+
+<!-- РАЗДЕЛЬНАЯ ТАБЛИЦА ПОБЕДИТЕЛЕЙ (ВЗЛОМ + МАНГО) -->
+<table width="850" border="0" cellpadding="0" cellspacing="0">
+<tr>
+
+<!-- ЛЕВАЯ ТАБЛИЦА: ВЗЛОМЩИКИ ДВЕРИ №1 -->
+<td width="415" valign="top">
+    <table width="100%" border="1" cellpadding="12" cellspacing="0" bgcolor="151824">
+    <tr>
+    <td align="center">
+        <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;margin-top:0;">
+            <b>🔓 ВЗЛОМАЛИ ДВЕРЬ (<span id="hackCount">0</span>)</b>
+        </p>
+        <p style="font-size:12px;color:#cccccc;font-family:arial;">
+            Напиши в Discord «Я ВЗЛОМАЛ ДВЕРЬ»
+        </p>
+
+        <table width="100%" border="1" cellpadding="8" cellspacing="0" bgcolor="181a24">
+        <tr bgcolor="13151d">
+            <td width="15%" align="center"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>#</b></p></td>
+            <td width="85%"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>Ник в Discord</b></p></td>
+        </tr>
+        <tr class="hack-row">
+            <td align="center"><p style="font-size:13px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
+            <td><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>Создатель сайта (Админ)</b></p></td>
+        </tr>
+        <tr>
+            <td align="center"><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;">2</p></td>
+            <td><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;"><i>Место свободно...</i></p></td>
+        </tr>
+        </table>
+    </td>
+    </tr>
+    </table>
+</td>
+
+<td width="20"></td>
+
+<!-- ПРАВАЯ ТАБЛИЦА: ЧЕМПИОНЫ ПО СБОРУ МАНГО -->
+<td width="415" valign="top">
+    <table width="100%" border="1" cellpadding="12" cellspacing="0" bgcolor="151824">
+    <tr>
+    <td align="center">
+        <p style="font-size:16px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;margin-top:0;">
+            <b>🥭 ТОП ПО МАНГО (<span id="mangoCount">0</span>)</b>
+        </p>
+        <p style="font-size:12px;color:#cccccc;font-family:arial;">
+            Скинь скрин рекорда в наш Discord!
+        </p>
+
+        <table width="100%" border="1" cellpadding="8" cellspacing="0" bgcolor="181a24">
+        <tr bgcolor="13151d">
+            <td width="15%" align="center"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>#</b></p></td>
+            <td width="55%"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>Ник в Discord</b></p></td>
+            <td width="30%" align="center"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>Манго</b></p></td>
+        </tr>
+        <tr class="mango-row">
+            <td align="center"><p style="font-size:13px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
+            <td><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>Создатель сайта</b></p></td>
+            <td align="center"><p style="font-size:13px;color:#F7D652;font-family:arial;margin:0;"><b>100 🥭</b></p></td>
+        </tr>
+        <tr>
+            <td align="center"><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;">2</p></td>
+            <td><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;"><i>Место свободно...</i></p></td>
+            <td align="center"><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;">0 🥭</p></td>
+        </tr>
+        </table>
+    </td>
+    </tr>
+    </table>
+</td>
+
+</tr>
+</table>
 <script>
+document.getElementById("hackCount").innerText = document.querySelectorAll(".hack-row").length;
+document.getElementById("mangoCount").innerText = document.querySelectorAll(".mango-row").length;
+
+var audioCtx = null;
+function playSound(type) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        var now = audioCtx.currentTime;
+
+        if (type === "door") {
+            var o1 = audioCtx.createOscillator(), o2 = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o1.type = "sawtooth"; o2.type = "square";
+            o1.frequency.setValueAtTime(55, now); o1.frequency.linearRampToValueAtTime(115, now + 0.9); o1.frequency.exponentialRampToValueAtTime(35, now + 1.15);
+            o2.frequency.setValueAtTime(82, now); o2.frequency.linearRampToValueAtTime(140, now + 0.9);
+            g.gain.setValueAtTime(0.05, now); g.gain.linearRampToValueAtTime(0.28, now + 0.3); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+            o1.start(now); o2.start(now); o1.stop(now + 1.2); o2.stop(now + 1.2);
+
+            var cl = audioCtx.createOscillator(), cg = audioCtx.createGain();
+            cl.type = "triangle"; cl.frequency.setValueAtTime(220, now + 0.95); cl.frequency.exponentialRampToValueAtTime(45, now + 1.2);
+            cg.gain.setValueAtTime(0.35, now + 0.95); cg.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            cl.connect(cg); cg.connect(audioCtx.destination); cl.start(now + 0.95); cl.stop(now + 1.2);
+        } else if (type === "catch") {
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = "sine"; o.frequency.setValueAtTime(600, now); o.frequency.exponentialRampToValueAtTime(1100, now + 0.12);
+            g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.12);
+        } else if (type === "splat") {
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = "sawtooth"; o.frequency.setValueAtTime(160, now); o.frequency.exponentialRampToValueAtTime(42, now + 0.25);
+            g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.25);
+        } else if (type === "win") {
+            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = "triangle";
+            o.frequency.setValueAtTime(523, now); o.frequency.setValueAtTime(659, now + 0.12);
+            o.frequency.setValueAtTime(784, now + 0.24); o.frequency.setValueAtTime(1046, now + 0.36);
+            g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.6);
+        }
+    } catch (e) {}
+}
+
 function openDoor() {
     var input = document.getElementById("doorPassword").value.toUpperCase().trim();
     var status = document.getElementById("doorStatus");
@@ -116,9 +238,11 @@ function openDoor() {
     if (input === "MANGO-001") {
         status.innerHTML = "";
         secret.style.display = "block";
+        playSound("door");
     } else {
         secret.style.display = "none";
         status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
+        playSound("splat");
     }
 }
 
@@ -126,6 +250,16 @@ var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
 var img = new Image(); img.src = "CynEP5.png";
 var p = 1, cx = 200, tx = 155, ty = 230, sc = 0, ms = 0, arr = [], on = false, t = 0, loop;
 var pts = [{x:155,y:135},{x:155,y:230},{x:405,y:135},{x:405,y:230}];
+
+var endingUnlocked = (localStorage.getItem("cynEnding100") === "true");
+var bestMango = Number(localStorage.getItem("cynBestMango")) || 0;
+document.getElementById("gBest").innerText = bestMango;
+
+if (endingUnlocked) {
+    document.getElementById("gGoal").innerText = " (∞)";
+    document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
+    document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (концовка уже открыта!)";
+}
 
 document.addEventListener("keydown", function(e) {
     var k = e.key.toLowerCase();
@@ -138,23 +272,20 @@ function runGame() {
     sc=0; ms=0; arr=[]; t=50; on=true;
     document.getElementById("gScore").innerText = 0;
     document.getElementById("gMiss").innerText = 0;
-    document.getElementById("winPrize").style.display = "none";
+    if (!endingUnlocked) document.getElementById("winPrize").style.display = "none";
     frame();
 }
 
 function draw() {
-    // Фон поместья, окно с луной и паркет
     ctx.fillStyle = "#1c1018"; ctx.fillRect(0,0,560,280);
     ctx.fillStyle = "#1c2541"; ctx.beginPath(); ctx.arc(280,95,45,Math.PI,0); ctx.lineTo(325,210); ctx.lineTo(235,210); ctx.fill();
     ctx.fillStyle = "#fff3b0"; ctx.beginPath(); ctx.arc(292,80,14,0,7); ctx.fill();
     ctx.fillStyle = "#2b1710"; ctx.fillRect(0,280,560,60);
 
-    // 4 золотых желоба
     ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 6; ctx.lineCap = "round";
     var r = [[15,75,155,135],[15,170,155,230],[545,75,405,135],[545,170,405,230]];
     for(var i=0;i<4;i++){ ctx.beginPath(); ctx.moveTo(r[i][0],r[i][1]); ctx.lineTo(r[i][2],r[i][3]); ctx.stroke(); }
 
-    // Плавное движение Син и подноса
     cx += ((p>1?295:195) - cx) * 0.22;
     tx += (pts[p].x - tx) * 0.28; ty += (pts[p].y - ty) * 0.28;
     var bob = Math.abs((p>1?295:195)-cx) > 2 ? Math.sin(Date.now()/45)*4 : 0;
@@ -168,7 +299,6 @@ function draw() {
     ctx.fillStyle = "#e0e0e0"; ctx.beginPath(); ctx.ellipse(tx, ty+8, 26, 6, 0, 0, 7); ctx.fill();
     ctx.strokeStyle = "#F7D652"; ctx.lineWidth = 2; ctx.stroke();
 
-    // Манго
     ctx.font = "22px Arial";
     for(var j=0;j<arr.length;j++){
         var m = arr[j], sx = m.l<2?15:545, sy = (m.l==0||m.l==2)?65:160;
@@ -180,26 +310,31 @@ function frame() {
     if(!on) return;
     draw();
     t++;
-    // Комфортная частота появления манго для набора 100 штук
-    var rate = Math.max(36, 75 - Math.floor(sc/4));
+    var rate = Math.max(30, 75 - Math.floor(sc/4));
     if(t >= rate){ arr.push({l:Math.floor(Math.random()*4), pr:0}); t=0; }
 
-    var spd = 0.011 + (sc * 0.00008); // Плавное лёгкое ускорение
+    var spd = 0.011 + (sc * 0.00007);
     for(var i=arr.length-1; i>=0; i--){
         arr[i].pr += spd;
         if(arr[i].pr >= 1){
             if(arr[i].l === p){
                 sc++; document.getElementById("gScore").innerText = sc;
-                if(sc >= 100){
-                    on = false; draw();
+                if (sc > bestMango) { bestMango = sc; localStorage.setItem("cynBestMango", bestMango); document.getElementById("gBest").innerText = bestMango; }
+                if(!endingUnlocked && sc >= 100){
+                    playSound("win"); on = false; draw();
+                    endingUnlocked = true; localStorage.setItem("cynEnding100", "true");
                     document.getElementById("winPrize").style.display = "block";
+                    document.getElementById("gGoal").innerText = " (∞)";
+                    document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
+                    document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (концовка уже открыта!)";
                     return;
-                }
+                } else { playSound("catch"); }
             } else {
-                ms++; document.getElementById("gMiss").innerText = ms;
+                playSound("splat"); ms++; document.getElementById("gMiss").innerText = ms;
                 if(ms >= 3){
                     on = false; ctx.fillStyle="rgba(0,0,0,0.8)"; ctx.fillRect(0,0,560,340);
-                    ctx.fillStyle="#ff5555"; ctx.font="bold 26px Arial"; ctx.fillText("ПРОИГРЫШ! Собрано: "+sc+"/100", 110, 175);
+                    ctx.fillStyle="#ff5555"; ctx.font="bold 24px Arial";
+                    ctx.fillText("СМЕНА ОКОНЧЕНА! Собрано: " + sc + " манго", 85, 175);
                     return;
                 }
             }
@@ -211,47 +346,6 @@ function frame() {
 draw();
 </script>
 
-<br>
-
-<!-- ЗАЛ СЛАВЫ: КТО УЖЕ ВЗЛОМАЛ ДВЕРЬ №1 -->
-<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="151824">
-<tr>
-<td align="center">
-
-    <p style="font-size:20px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
-        <b>&nbsp;🏆 ОНИ ВЗЛОМАЛИ ДВЕРЬ №1 (ХАКЕРЫ БУНКЕРА)&nbsp;</b>
-    </p>
-
-    <p style="font-size:14px;color:#cccccc;font-family:arial;">
-        Прошёл квест у Син и открыл дверь? Напиши <b>«Я ВЗЛОМАЛ ДВЕРЬ»</b> в наш Discord, и админ добавит тебя в этот список!
-    </p>
-
-    <!-- ТАБЛИЦА ПОБЕДИТЕЛЕЙ (ДОБАВЛЯЙ НОВЫЕ СТРОКИ <tr> ДЛЯ НОВЫХ ЛЮДЕЙ) -->
-    <table width="100%" border="1" cellpadding="10" cellspacing="0" bgcolor="181a24">
-    <tr bgcolor="13151d">
-        <td width="10%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>#</b></p></td>
-        <td width="50%"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Ник в Discord</b></p></td>
-        <td width="40%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Статус</b></p></td>
-    </tr>
-
-    <!-- ПЕРВЫЙ ВЗЛОМЩИК (ТЫ!) -->
-    <tr>
-        <td align="center"><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
-        <td><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>N_Destro (Админ)</b></p></td>
-        <td align="center"><p style="font-size:13px;color:#793EA6;font-family:arial;margin:0;"><b>Взломал с 1-й попытки При проверке кода (был баг уже пофикшен)</b></p></td>
-    </tr>
-
-    <!-- СЮДА КОПИРУЙ ЭТОТ БЛОК ДЛЯ НОВОГО УЧАСТНИКА ИЗ DISCORD: -->
-    <tr>
-        <td align="center"><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><b>2</b></p></td>
-        <td><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><i>Место свободно...</i></p></td>
-        <td align="center"><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;">Ждём героя</p></td>
-    </tr>
-    </table>
-
-</td>
-</tr>
-</table>
 
 
 <br><br>
