@@ -20,7 +20,23 @@
 <hr>
 
 <h1><p style="font-size:55px;color:#F7D652;font-family:arial;">Хан Доорман</p></h1>
-<img src="Khan.png" width="300">
+<!-- КАРТИНКА ХАНА С СЕКРЕТОМ (5 КЛИКОВ ПО ФОТО) -->
+<img src="Khan.png" width="300" onclick="tapKhan()" style="cursor:pointer;" title="Потрогать усы Хана">
+<p id="khanSecret" style="font-size:16px;color:#F7D652;font-family:arial;margin-top:10px;"></p>
+
+<script>
+var khanTaps = 0;
+function tapKhan() {
+    khanTaps++;
+    var box = document.getElementById("khanSecret");
+    if (khanTaps === 5) {
+        box.innerHTML = "🚪 <b>Хан:</b> <i>«Ладно-ладно, не трогай усы! Вот мой личный код инженера для Двери №1: <span style='background:#793EA6;padding:3px 8px;'>KHAN-LOVE</span>»</i>";
+    } else if (khanTaps < 5) {
+        box.innerHTML = "<small style='color:#aaaaaa;'>Хан поправляет усы... (" + khanTaps + "/5)</small>";
+    }
+}
+</script>
+
 <br><br>
 
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="151824">
