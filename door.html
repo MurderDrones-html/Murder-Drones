@@ -186,50 +186,63 @@
 </tr>
 </table>
 <script>
+// Счетчики в таблицах
 document.getElementById("hackCount").innerText = document.querySelectorAll(".hack-row").length;
 document.getElementById("mangoCount").innerText = document.querySelectorAll(".mango-row").length;
 
+// ЗВУКОВОЙ СИНТЕЗАТОР (не нужны mp3 файлы!)
 var audioCtx = null;
+
 function playSound(type) {
     try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === "suspended") {
+            audioCtx.resume();
+        }
         var now = audioCtx.currentTime;
 
         if (type === "door") {
+            // Тяжелый гидравлический скрежет двери
             var o1 = audioCtx.createOscillator(), o2 = audioCtx.createOscillator(), g = audioCtx.createGain();
             o1.type = "sawtooth"; o2.type = "square";
             o1.frequency.setValueAtTime(55, now); o1.frequency.linearRampToValueAtTime(115, now + 0.9); o1.frequency.exponentialRampToValueAtTime(35, now + 1.15);
             o2.frequency.setValueAtTime(82, now); o2.frequency.linearRampToValueAtTime(140, now + 0.9);
-            g.gain.setValueAtTime(0.05, now); g.gain.linearRampToValueAtTime(0.28, now + 0.3); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            g.gain.setValueAtTime(0.05, now); g.gain.linearRampToValueAtTime(0.3, now + 0.3); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
             o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
             o1.start(now); o2.start(now); o1.stop(now + 1.2); o2.stop(now + 1.2);
 
+            // Удар засова в конце
             var cl = audioCtx.createOscillator(), cg = audioCtx.createGain();
             cl.type = "triangle"; cl.frequency.setValueAtTime(220, now + 0.95); cl.frequency.exponentialRampToValueAtTime(45, now + 1.2);
-            cg.gain.setValueAtTime(0.35, now + 0.95); cg.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            cg.gain.setValueAtTime(0.4, now + 0.95); cg.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
             cl.connect(cg); cg.connect(audioCtx.destination); cl.start(now + 0.95); cl.stop(now + 1.2);
         } else if (type === "catch") {
+            // Дзинь подноса
             var o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = "sine"; o.frequency.setValueAtTime(600, now); o.frequency.exponentialRampToValueAtTime(1100, now + 0.12);
-            g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
             o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.12);
         } else if (type === "splat") {
+            // Шмяк манго об пол
             var o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = "sawtooth"; o.frequency.setValueAtTime(160, now); o.frequency.exponentialRampToValueAtTime(42, now + 0.25);
-            g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            g.gain.setValueAtTime(0.35, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
             o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.25);
         } else if (type === "win") {
+            // Победный аккорд
             var o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = "triangle";
             o.frequency.setValueAtTime(523, now); o.frequency.setValueAtTime(659, now + 0.12);
             o.frequency.setValueAtTime(784, now + 0.24); o.frequency.setValueAtTime(1046, now + 0.36);
-            g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+            g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
             o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.6);
         }
     } catch (e) {}
 }
 
+// ОТКРЫТИЕ ДВЕРИ (всегда закрыта при F5, но сейвы рекордов остаются!)
 function openDoor() {
     var input = document.getElementById("doorPassword").value.toUpperCase().trim();
     var status = document.getElementById("doorStatus");
@@ -239,6 +252,7 @@ function openDoor() {
         status.innerHTML = "";
         secret.style.display = "block";
         playSound("door");
+        draw(); // Отрисовываем холст сразу при открытии
     } else {
         secret.style.display = "none";
         status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
@@ -246,19 +260,23 @@ function openDoor() {
     }
 }
 
+// НАСТРОЙКИ ИГРЫ И СОХРАНЕНИЯ
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
 var img = new Image(); img.src = "CynEP5.png";
 var p = 1, cx = 200, tx = 155, ty = 230, sc = 0, ms = 0, arr = [], on = false, t = 0, loop;
 var pts = [{x:155,y:135},{x:155,y:230},{x:405,y:135},{x:405,y:230}];
 
+// Загружаем сохраненный прогресс из памяти браузера
 var endingUnlocked = (localStorage.getItem("cynEnding100") === "true");
 var bestMango = Number(localStorage.getItem("cynBestMango")) || 0;
 document.getElementById("gBest").innerText = bestMango;
 
+// Если концовка уже открывалась раньше — сразу применяем бесконечный режим и показываем награду при открытии двери
 if (endingUnlocked) {
     document.getElementById("gGoal").innerText = " (∞)";
     document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
     document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (концовка уже открыта!)";
+    document.getElementById("winPrize").style.display = "block";
 }
 
 document.addEventListener("keydown", function(e) {
@@ -272,7 +290,7 @@ function runGame() {
     sc=0; ms=0; arr=[]; t=50; on=true;
     document.getElementById("gScore").innerText = 0;
     document.getElementById("gMiss").innerText = 0;
-    if (!endingUnlocked) document.getElementById("winPrize").style.display = "none";
+    playSound("catch"); // Активируем звук кликом по кнопке старта
     frame();
 }
 
@@ -282,9 +300,15 @@ function draw() {
     ctx.fillStyle = "#fff3b0"; ctx.beginPath(); ctx.arc(292,80,14,0,7); ctx.fill();
     ctx.fillStyle = "#2b1710"; ctx.fillRect(0,280,560,60);
 
+    // 4 золотых желоба (исправлены координаты)
     ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 6; ctx.lineCap = "round";
-    var r = [[15,75,155,135],[15,170,155,230],[545,75,405,135],[545,170,405,230]];
-    for(var i=0;i<4;i++){ ctx.beginPath(); ctx.moveTo(r[i][0],r[i][1]); ctx.lineTo(r[i][2],r[i][3]); ctx.stroke(); }
+    var r = [[15,75,155,135], [15,170,155,230], [545,75,405,135], [545,170,405,230]];
+    for(var i=0;i<4;i++){ 
+        ctx.beginPath(); 
+        ctx.moveTo(r[i][0], r[i][1]); 
+        ctx.lineTo(r[i][2], r[i][3]); 
+        ctx.stroke(); 
+    }
 
     cx += ((p>1?295:195) - cx) * 0.22;
     tx += (pts[p].x - tx) * 0.28; ty += (pts[p].y - ty) * 0.28;
@@ -319,7 +343,11 @@ function frame() {
         if(arr[i].pr >= 1){
             if(arr[i].l === p){
                 sc++; document.getElementById("gScore").innerText = sc;
-                if (sc > bestMango) { bestMango = sc; localStorage.setItem("cynBestMango", bestMango); document.getElementById("gBest").innerText = bestMango; }
+                if (sc > bestMango) { 
+                    bestMango = sc; 
+                    localStorage.setItem("cynBestMango", bestMango); 
+                    document.getElementById("gBest").innerText = bestMango; 
+                }
                 if(!endingUnlocked && sc >= 100){
                     playSound("win"); on = false; draw();
                     endingUnlocked = true; localStorage.setItem("cynEnding100", "true");
@@ -328,7 +356,9 @@ function frame() {
                     document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
                     document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (концовка уже открыта!)";
                     return;
-                } else { playSound("catch"); }
+                } else { 
+                    playSound("catch"); 
+                }
             } else {
                 playSound("splat"); ms++; document.getElementById("gMiss").innerText = ms;
                 if(ms >= 3){
@@ -345,6 +375,7 @@ function frame() {
 }
 draw();
 </script>
+
 
 
 
