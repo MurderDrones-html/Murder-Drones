@@ -147,7 +147,7 @@
 </table>
 <br>
 
-<!-- ПАСХАЛКА ВИ: ПУЗЫРИ И ХАРАКТЕР -->
+<!-- ПАСХАЛКА ВИ: ПУЗЫРИ С КУЛДАУНОМ 1 СЕК -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -157,7 +157,7 @@
     <p id="vBubbleText" style="font-size:16px;color:#ffffff;font-family:arial;">
         Надуто пузырей: <b>0</b>
     </p>
-    <button type="button" onclick="blowBubble()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+    <button id="vBtn" type="button" onclick="blowBubble()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
         Надуть мыльный пузырь 🫧
     </button>
 </td>
@@ -167,6 +167,7 @@
 <script>
 var vSound = new Audio("v.mp3");
 var vBubbles = Number(localStorage.getItem("vBubblesCount")) || 0;
+var isBlowing = false;
 var vTxt = document.getElementById("vBubbleText");
 
 if (vBubbles >= 12) {
@@ -177,8 +178,16 @@ if (vBubbles >= 12) {
 }
 
 function blowBubble() {
-    // ИГРАЕМ ЗВУК ЛОПАЮЩЕГОСЯ ПУЗЫРЯ!
+    if (isBlowing) return;
+
     try { vSound.currentTime = 0; vSound.play(); } catch (e) {}
+
+    isBlowing = true;
+    var btn = document.getElementById("vBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Ви набирает воздух... 😤";
 
     var vPhrases = [
         "Ви: «Мы все тут абсолютно спокойные. *Щёлкает когтями*»",
@@ -202,8 +211,18 @@ function blowBubble() {
         vTxt.style.color = "#ffffff";
         vTxt.innerHTML = "Надуто пузырей: <b>" + vBubbles + "</b> / 12<br><i>" + line + "</i>";
     }
+
+    // Кулдаун 1 секунда (1000 мс)
+    setTimeout(function() {
+        isBlowing = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#F7D652";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Надуть мыльный пузырь 🫧";
+    }, 1000);
 }
 </script>
+
 
 
 <br><br>
