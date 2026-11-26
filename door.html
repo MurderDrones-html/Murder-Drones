@@ -189,140 +189,24 @@
 document.getElementById("hackCount").innerText = document.querySelectorAll(".hack-row").length;
 document.getElementById("mangoCount").innerText = document.querySelectorAll(".mango-row").length;
 
-var audioCtx = null;
-
-function createNoiseBuffer() {
-    var bufferSize = audioCtx.sampleRate * 1.5;
-    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    var data = buffer.getChannelData(0);
-    for (var i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-    }
-    return buffer;
-}
+// Загружаем твои реальные звуки из папки
+var sounds = {
+    door: new Audio("door.mp3"),
+    catch: new Audio("mango2.mp3"),
+    splat: new Audio("mango.mp3"),
+    win: new Audio("win.mp3")
+};
 
 function playSound(type) {
     try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        var now = audioCtx.currentTime;
-
-        if (type === "door") {
-            var noise = audioCtx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
-            var filter = audioCtx.createBiquadFilter();
-            filter.type = "bandpass";
-            filter.frequency.setValueAtTime(400, now);
-            filter.frequency.linearRampToValueAtTime(1200, now + 0.4);
-            filter.frequency.linearRampToValueAtTime(250, now + 1.0);
-            filter.Q.value = 2.5;
-
-            var nGain = audioCtx.createGain();
-            nGain.gain.setValueAtTime(0.01, now);
-            nGain.gain.linearRampToValueAtTime(0.35, now + 0.15);
-            nGain.gain.exponentialRampToValueAtTime(0.01, now + 1.05);
-
-            noise.connect(filter);
-            filter.connect(nGain);
-            nGain.connect(audioCtx.destination);
-            noise.start(now);
-            noise.stop(now + 1.05);
-
-            var motor = audioCtx.createOscillator();
-            var mGain = audioCtx.createGain();
-            motor.type = "triangle";
-            motor.frequency.setValueAtTime(45, now);
-            motor.frequency.linearRampToValueAtTime(68, now + 0.9);
-            mGain.gain.setValueAtTime(0.25, now);
-            mGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
-            motor.connect(mGain);
-            mGain.connect(audioCtx.destination);
-            motor.start(now);
-            motor.stop(now + 1.0);
-
-            var thud = audioCtx.createOscillator();
-            var tGain = audioCtx.createGain();
-            thud.type = "sine";
-            thud.frequency.setValueAtTime(110, now + 0.95);
-            thud.frequency.exponentialRampToValueAtTime(28, now + 1.25);
-            tGain.gain.setValueAtTime(0.55, now + 0.95);
-            tGain.gain.exponentialRampToValueAtTime(0.01, now + 1.25);
-            thud.connect(tGain);
-            tGain.connect(audioCtx.destination);
-            thud.start(now + 0.95);
-            thud.stop(now + 1.25);
-
-        } else if (type === "splat") {
-            var noise = audioCtx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
-            var filter = audioCtx.createBiquadFilter();
-            filter.type = "lowpass";
-            filter.frequency.setValueAtTime(950, now);
-            filter.frequency.exponentialRampToValueAtTime(180, now + 0.18);
-
-            var nGain = audioCtx.createGain();
-            nGain.gain.setValueAtTime(0.45, now);
-            nGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
-
-            noise.connect(filter);
-            filter.connect(nGain);
-            nGain.connect(audioCtx.destination);
-            noise.start(now);
-            noise.stop(now + 0.18);
-
-            var thud = audioCtx.createOscillator();
-            var tGain = audioCtx.createGain();
-            thud.type = "sine";
-            thud.frequency.setValueAtTime(130, now);
-            thud.frequency.exponentialRampToValueAtTime(35, now + 0.14);
-            tGain.gain.setValueAtTime(0.4, now);
-            tGain.gain.exponentialRampToValueAtTime(0.01, now + 0.14);
-            thud.connect(tGain);
-            tGain.connect(audioCtx.destination);
-            thud.start(now);
-            thud.stop(now + 0.14);
-
-        } else if (type === "catch") {
-            var tap = audioCtx.createOscillator();
-            var tGain = audioCtx.createGain();
-            tap.type = "sine";
-            tap.frequency.setValueAtTime(240, now);
-            tap.frequency.exponentialRampToValueAtTime(90, now + 0.06);
-            tGain.gain.setValueAtTime(0.25, now);
-            tGain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
-            tap.connect(tGain);
-            tGain.connect(audioCtx.destination);
-            tap.start(now);
-            tap.stop(now + 0.06);
-
-            var ring = audioCtx.createOscillator();
-            var rGain = audioCtx.createGain();
-            ring.type = "triangle";
-            ring.frequency.setValueAtTime(880, now);
-            rGain.gain.setValueAtTime(0.08, now);
-            rGain.gain.exponentialRampToValueAtTime(0.005, now + 0.15);
-            ring.connect(rGain);
-            rGain.connect(audioCtx.destination);
-            ring.start(now);
-            ring.stop(now + 0.15);
-
-        } else if (type === "win") {
-            var notes = [392, 493.88, 587.33, 783.99];
-            for (var i = 0; i < notes.length; i++) {
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.type = "triangle";
-                osc.frequency.setValueAtTime(notes[i], now + i * 0.1);
-                gain.gain.setValueAtTime(0.18, now + i * 0.1);
-                gain.gain.exponentialRampToValueAtTime(0.005, now + i * 0.1 + 0.5);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now + i * 0.1);
-                osc.stop(now + i * 0.1 + 0.5);
-            }
+        var s = sounds[type];
+        if (s) {
+            s.currentTime = 0; // Сбрасываем на начало для быстрых повторов
+            s.play();
         }
     } catch (e) {}
 }
+
 function openDoor() {
     var input = document.getElementById("doorPassword").value.toUpperCase().trim();
     var status = document.getElementById("doorStatus");
