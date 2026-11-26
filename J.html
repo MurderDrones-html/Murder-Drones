@@ -103,6 +103,44 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАСХАЛКА ДЖЕЙ: РУЧКА JCJENSON -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;">
+        <b>&nbsp;🖊️ ОТДЕЛ КОНТРОЛЯ КАЧЕСТВА JCJENSON&nbsp;</b>
+    </p>
+    <p id="penText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Нажатий на фирменную ручку: <b>0</b>
+    </p>
+    <button type="button" onclick="clickPen()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Пощёлкать ручкой JCJenson 🖊️
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+var penClicks = 0;
+function clickPen() {
+    penClicks++;
+    var txt = document.getElementById("penText");
+
+    if (penClicks === 10) {
+        txt.style.color = "#F7D652";
+        txt.innerHTML = "🏆 <b>10 нажатий!</b> Джей: <i>«Безупречная сборка JCJenson in spaaaaace! Премия одобрена, сотрудник!»</i>";
+    } else if (penClicks > 10) {
+        txt.style.color = "#ffffff";
+        txt.innerHTML = "Нажатий: <b>" + penClicks + "</b> — Джей довольна твоей продуктивностью.";
+    } else {
+        txt.style.color = "#ffffff";
+        txt.innerHTML = "Нажатий на фирменную ручку: <b>" + penClicks + "</b> / 10 (Щёлк!)";
+    }
+}
+</script>
+
 
 <br><br>
 <div align="left">
