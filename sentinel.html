@@ -65,6 +65,46 @@ function flashSentinel() {
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ЭКРАН ИГРЫ СЕНТИНЕЛА -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+
+    <p style="font-size:20px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;">
+        <b>&nbsp;🦖 ЗАБЕГ СЕНТИНЕЛА (CABIN FEVER RUN)&nbsp;</b>
+    </p>
+
+    <p style="font-size:16px;color:#F7D652;font-family:arial;">
+        Дистанция: <b id="dScore">0</b> м &nbsp;|&nbsp; Рекорд: <b id="dBest">0</b> м
+    </p>
+
+    <!-- ВОТ ЭТОТ ХОЛСТ ОБЯЗАТЕЛЕН, ЧТОБЫ БЫЛО ВИДНО ДИНОЗАВРА И ПРЕПЯТСТВИЯ -->
+    <canvas id="dinoGame" width="600" height="220" style="background-color:#0b0c10;border:3px solid #793EA6;"></canvas>
+    <br><br>
+
+    <button type="button" onclick="dinoJump()" style="padding:12px 24px;background:#793EA6;color:#F7D652;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
+        ⬆️ ПРЫЖОК (Пробел / W)
+    </button>
+    &nbsp;&nbsp;
+    <button type="button" onclick="dinoFlash()" style="padding:12px 24px;background:#ffffff;color:#000000;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
+        ⚡ ВСПЫШКА ПО ДРОНУ (F)
+    </button>
+    <br><br>
+
+    <button type="button" onclick="startDino()" style="padding:10px 25px;background:#F7D652;color:#000000;font-weight:bold;border:none;cursor:pointer;font-size:15px;">
+        НАЧАТЬ ЗАБЕГ
+    </button>
+
+    <p style="font-size:13px;color:#aaaaaa;font-family:arial;margin-top:10px;">
+        Нажми <b>«НАЧАТЬ ЗАБЕГ»</b> — ящики JCJenson поедут справа, а сверху будут летать дроны!
+    </p>
+
+</td>
+</tr>
+</table>
+
 <script>
 var dc = document.getElementById("dinoGame"), dctx = dc.getContext("2d");
 
