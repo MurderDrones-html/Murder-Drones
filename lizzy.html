@@ -43,6 +43,94 @@
 </td>
 </tr>
 </table>
+<br>
+
+<!-- ПАСХАЛКА ЛИЗЗИ: СОЦСЕТИ И ЛАЙКИ -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+
+    <p style="font-size:18px;color:#ffffff;background-color:#d63384;font-family:arial;padding:8px;">
+        <b>&nbsp;📱 LIZZY-GRAM: ПУТЬ К ПОПУЛЯРНОСТИ НА МЕДНО-9&nbsp;</b>
+    </p>
+
+    <p id="lizzyText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Опубликовано постов: <b>0</b> / 20 &nbsp;|&nbsp; Подписчиков: <b>0</b> ❤️
+    </p>
+
+    <button id="lizzyBtn" type="button" onclick="postLizzySelfie()" style="background-color:#ff66b2;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+        Запостить селфи с Ви 📸
+    </button>
+
+</td>
+</tr>
+</table>
+
+<script>
+// Загружаем прогресс постов и подписчиков Лиззи
+var lizzyPosts = Number(localStorage.getItem("lizzyPostsCount")) || 0;
+var lizzySubs = Number(localStorage.getItem("lizzySubsCount")) || 0;
+var isPosting = false;
+var lTxt = document.getElementById("lizzyText");
+
+if (lizzyPosts >= 20) {
+    lTxt.style.color = "#ff66b2";
+    lTxt.innerHTML = "👑 <b>КОРОЛЕВА МЕДНО-9!</b> Постов: <b>" + lizzyPosts + "</b> | Подписчиков: <b>" + lizzySubs + "</b> ❤️<br><i>Лиззи: «Окей, ты официально в моей тусовке. Только не одевайся как эта фиолетовая зануда Узи!»</i>";
+} else if (lizzyPosts > 0) {
+    lTxt.innerHTML = "Опубликовано постов: <b>" + lizzyPosts + "</b> / 20 &nbsp;|&nbsp; Подписчиков: <b>" + lizzySubs + "</b> ❤️";
+}
+
+function postLizzySelfie() {
+    if (isPosting) return;
+    isPosting = true;
+
+    var btn = document.getElementById("lizzyBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Лиззи накладывает фильтр... ✨";
+
+    // Лёгкая розовая вспышка селфи-камеры
+    document.body.style.backgroundColor = "#3d1229";
+    setTimeout(function() { document.body.style.backgroundColor = "#0b0c10"; }, 250);
+
+    var lizzyPhrases = [
+        "Лиззи: «Боже, я тут просто икона стиля. Даже на фоне взрыва!»",
+        "Лиззи: «Ви сказала, что откусит мне руку, если я выложу это... Выкладываю!»",
+        "Лиззи: «Узи опять строит из себя главную героиню. Кринж.»",
+        "Лиззи: «Смотри, сколько лайков! Надо срочно обновить статус.»",
+        "Лиззи: «Тэд сказал, что фотка топ. Ну ещё бы, это же я!»"
+    ];
+
+    lizzyPosts++;
+    // За каждый пост прибавляется случайное число подписчиков (от 15 до 60)
+    lizzySubs += Math.floor(Math.random() * 46) + 15;
+
+    localStorage.setItem("lizzyPostsCount", lizzyPosts);
+    localStorage.setItem("lizzySubsCount", lizzySubs);
+
+    if (lizzyPosts === 20) {
+        lTxt.style.color = "#ff66b2";
+        lTxt.innerHTML = "👑 <b>20/20 — СТАТУС «КОРОЛЕВА МЕДНО-9» ОТКРЫТ!</b> Подписчиков: <b>" + lizzySubs + "</b> ❤️<br><i>Лиззи: «Окей, ты официально в моей тусовке. Только не одевайся как эта фиолетовая зануда!»</i>";
+    } else if (lizzyPosts > 20) {
+        lTxt.style.color = "#ff66b2";
+        lTxt.innerHTML = "👑 <b>КОРОЛЕВА МЕДНО-9!</b> Постов: <b>" + lizzyPosts + "</b> | Подписчиков: <b>" + lizzySubs + "</b> ❤️<br><i>Лиззи: «Окей, ты официально в моей тусовке. Только не одевайся как эта фиолетовая зануда!»</i>";
+    } else {
+        var line = lizzyPhrases[Math.floor(Math.random() * lizzyPhrases.length)];
+        lTxt.style.color = "#ffffff";
+        lTxt.innerHTML = "Опубликовано постов: <b>" + lizzyPosts + "</b> / 20 &nbsp;|&nbsp; Подписчиков: <b>" + lizzySubs + "</b> ❤️<br><i>" + line + "</i>";
+    }
+
+    // Кулдаун 1.2 секунды (1200 мс)
+    setTimeout(function() {
+        isPosting = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#ff66b2";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Запостить селфи с Ви 📸";
+    }, 1200);
+}
+</script>
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
