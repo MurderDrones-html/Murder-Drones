@@ -131,12 +131,11 @@
 </table>
 
 <script>
-// Загружаем текущий заряд и общее число выстрелов из памяти браузера
+var uziSound = new Audio("uzi.mp3");
 var charge = Number(localStorage.getItem("uziCharge")) || 0;
 var totalShots = Number(localStorage.getItem("uziTotalShots")) || 0;
 var txt = document.getElementById("railText");
 
-// Сразу при загрузке страницы показываем сохранённый статус
 if (charge === 100) {
     txt.style.color = "#00ff88";
     txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми для выстрела! <small style='color:#aaaaaa;'>(Всего выстрелов: " + totalShots + ")</small>";
@@ -156,7 +155,9 @@ function chargeRailgun() {
         txt.style.color = "#00ff88";
         txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми ещё раз для выстрела! <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
     } else {
-        // Выстрел! Сбрасываем заряд на 0, увеличиваем счётчик выстрелов и сохраняем
+        // ИГРАЕМ ЗВУК ВЫСТРЕЛА РЕЛЬСОТРОНА!
+        try { uziSound.currentTime = 0; uziSound.play(); } catch (e) {}
+
         charge = 0;
         totalShots++;
         localStorage.setItem("uziCharge", 0);
