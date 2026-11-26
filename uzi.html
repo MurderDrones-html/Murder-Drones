@@ -111,6 +111,49 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАСХАЛКА УЗИ: РЕЛЬСОТРОН -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
+        <b>&nbsp;⚡ ПУШКА УЗИ (РЕЛЬСОТРОН)&nbsp;</b>
+    </p>
+    <p id="railText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Заряд: <b>0%</b> (Готов к зарядке)
+    </p>
+    <button type="button" onclick="chargeRailgun()" style="background-color:#793EA6;color:#F7D652;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+        Зарядить рельсотрон ⚡
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+var charge = 0;
+function chargeRailgun() {
+    var txt = document.getElementById("railText");
+    charge += 25;
+
+    if (charge < 100) {
+        txt.style.color = "#ffffff";
+        txt.innerHTML = "Заряд: <b>" + charge + "%</b>... Накапливаем энергию...";
+    } else if (charge === 100) {
+        txt.style.color = "#00ff88";
+        txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми ещё раз для выстрела!";
+    } else {
+        // Вспышка фиолетовым цветом на полсекунды!
+        document.body.style.backgroundColor = "#793EA6";
+        setTimeout(function() { document.body.style.backgroundColor = "#0b0c10"; }, 400);
+
+        txt.style.color = "#F7D652";
+        txt.innerHTML = "💥 <b>БА-БАХ!! BITE ME! (УКУСИ МЕНЯ!)</b> — Рельсотрон ушёл на перезарядку (0%).";
+        charge = 0;
+    }
+}
+</script>
+
 
 <br><br>
 <div align="left">
