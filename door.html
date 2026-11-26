@@ -186,63 +186,143 @@
 </tr>
 </table>
 <script>
-// Счетчики в таблицах
 document.getElementById("hackCount").innerText = document.querySelectorAll(".hack-row").length;
 document.getElementById("mangoCount").innerText = document.querySelectorAll(".mango-row").length;
 
-// ЗВУКОВОЙ СИНТЕЗАТОР (не нужны mp3 файлы!)
 var audioCtx = null;
+
+function createNoiseBuffer() {
+    var bufferSize = audioCtx.sampleRate * 1.5;
+    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
+}
 
 function playSound(type) {
     try {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === "suspended") {
-            audioCtx.resume();
-        }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
         var now = audioCtx.currentTime;
 
         if (type === "door") {
-            // Тяжелый гидравлический скрежет двери
-            var o1 = audioCtx.createOscillator(), o2 = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o1.type = "sawtooth"; o2.type = "square";
-            o1.frequency.setValueAtTime(55, now); o1.frequency.linearRampToValueAtTime(115, now + 0.9); o1.frequency.exponentialRampToValueAtTime(35, now + 1.15);
-            o2.frequency.setValueAtTime(82, now); o2.frequency.linearRampToValueAtTime(140, now + 0.9);
-            g.gain.setValueAtTime(0.05, now); g.gain.linearRampToValueAtTime(0.3, now + 0.3); g.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-            o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
-            o1.start(now); o2.start(now); o1.stop(now + 1.2); o2.stop(now + 1.2);
+            var noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer();
+            var filter = audioCtx.createBiquadFilter();
+            filter.type = "bandpass";
+            filter.frequency.setValueAtTime(400, now);
+            filter.frequency.linearRampToValueAtTime(1200, now + 0.4);
+            filter.frequency.linearRampToValueAtTime(250, now + 1.0);
+            filter.Q.value = 2.5;
 
-            // Удар засова в конце
-            var cl = audioCtx.createOscillator(), cg = audioCtx.createGain();
-            cl.type = "triangle"; cl.frequency.setValueAtTime(220, now + 0.95); cl.frequency.exponentialRampToValueAtTime(45, now + 1.2);
-            cg.gain.setValueAtTime(0.4, now + 0.95); cg.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-            cl.connect(cg); cg.connect(audioCtx.destination); cl.start(now + 0.95); cl.stop(now + 1.2);
-        } else if (type === "catch") {
-            // Дзинь подноса
-            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = "sine"; o.frequency.setValueAtTime(600, now); o.frequency.exponentialRampToValueAtTime(1100, now + 0.12);
-            g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.12);
+            var nGain = audioCtx.createGain();
+            nGain.gain.setValueAtTime(0.01, now);
+            nGain.gain.linearRampToValueAtTime(0.35, now + 0.15);
+            nGain.gain.exponentialRampToValueAtTime(0.01, now + 1.05);
+
+            noise.connect(filter);
+            filter.connect(nGain);
+            nGain.connect(audioCtx.destination);
+            noise.start(now);
+            noise.stop(now + 1.05);
+
+            var motor = audioCtx.createOscillator();
+            var mGain = audioCtx.createGain();
+            motor.type = "triangle";
+            motor.frequency.setValueAtTime(45, now);
+            motor.frequency.linearRampToValueAtTime(68, now + 0.9);
+            mGain.gain.setValueAtTime(0.25, now);
+            mGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+            motor.connect(mGain);
+            mGain.connect(audioCtx.destination);
+            motor.start(now);
+            motor.stop(now + 1.0);
+
+            var thud = audioCtx.createOscillator();
+            var tGain = audioCtx.createGain();
+            thud.type = "sine";
+            thud.frequency.setValueAtTime(110, now + 0.95);
+            thud.frequency.exponentialRampToValueAtTime(28, now + 1.25);
+            tGain.gain.setValueAtTime(0.55, now + 0.95);
+            tGain.gain.exponentialRampToValueAtTime(0.01, now + 1.25);
+            thud.connect(tGain);
+            tGain.connect(audioCtx.destination);
+            thud.start(now + 0.95);
+            thud.stop(now + 1.25);
+
         } else if (type === "splat") {
-            // Шмяк манго об пол
-            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = "sawtooth"; o.frequency.setValueAtTime(160, now); o.frequency.exponentialRampToValueAtTime(42, now + 0.25);
-            g.gain.setValueAtTime(0.35, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.25);
+            var noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer();
+            var filter = audioCtx.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(950, now);
+            filter.frequency.exponentialRampToValueAtTime(180, now + 0.18);
+
+            var nGain = audioCtx.createGain();
+            nGain.gain.setValueAtTime(0.45, now);
+            nGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+            noise.connect(filter);
+            filter.connect(nGain);
+            nGain.connect(audioCtx.destination);
+            noise.start(now);
+            noise.stop(now + 0.18);
+
+            var thud = audioCtx.createOscillator();
+            var tGain = audioCtx.createGain();
+            thud.type = "sine";
+            thud.frequency.setValueAtTime(130, now);
+            thud.frequency.exponentialRampToValueAtTime(35, now + 0.14);
+            tGain.gain.setValueAtTime(0.4, now);
+            tGain.gain.exponentialRampToValueAtTime(0.01, now + 0.14);
+            thud.connect(tGain);
+            tGain.connect(audioCtx.destination);
+            thud.start(now);
+            thud.stop(now + 0.14);
+
+        } else if (type === "catch") {
+            var tap = audioCtx.createOscillator();
+            var tGain = audioCtx.createGain();
+            tap.type = "sine";
+            tap.frequency.setValueAtTime(240, now);
+            tap.frequency.exponentialRampToValueAtTime(90, now + 0.06);
+            tGain.gain.setValueAtTime(0.25, now);
+            tGain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+            tap.connect(tGain);
+            tGain.connect(audioCtx.destination);
+            tap.start(now);
+            tap.stop(now + 0.06);
+
+            var ring = audioCtx.createOscillator();
+            var rGain = audioCtx.createGain();
+            ring.type = "triangle";
+            ring.frequency.setValueAtTime(880, now);
+            rGain.gain.setValueAtTime(0.08, now);
+            rGain.gain.exponentialRampToValueAtTime(0.005, now + 0.15);
+            ring.connect(rGain);
+            rGain.connect(audioCtx.destination);
+            ring.start(now);
+            ring.stop(now + 0.15);
+
         } else if (type === "win") {
-            // Победный аккорд
-            var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = "triangle";
-            o.frequency.setValueAtTime(523, now); o.frequency.setValueAtTime(659, now + 0.12);
-            o.frequency.setValueAtTime(784, now + 0.24); o.frequency.setValueAtTime(1046, now + 0.36);
-            g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-            o.connect(g); g.connect(audioCtx.destination); o.start(now); o.stop(now + 0.6);
+            var notes = [392, 493.88, 587.33, 783.99];
+            for (var i = 0; i < notes.length; i++) {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(notes[i], now + i * 0.1);
+                gain.gain.setValueAtTime(0.18, now + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + i * 0.1 + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.5);
+            }
         }
     } catch (e) {}
 }
-
-// ОТКРЫТИЕ ДВЕРИ (всегда закрыта при F5, но сейвы рекордов остаются!)
 function openDoor() {
     var input = document.getElementById("doorPassword").value.toUpperCase().trim();
     var status = document.getElementById("doorStatus");
@@ -254,12 +334,10 @@ function openDoor() {
         playSound("door");
         draw();
     } else if (input === "ADMIN-MANGO") {
-        // СЕКРЕТНЫЙ СКИП ДЛЯ АДМИНА
         status.innerHTML = "";
         secret.style.display = "block";
         playSound("win");
 
-        // Мгновенно открываем концовку и бесконечный режим
         endingUnlocked = true;
         localStorage.setItem("cynEnding100", "true");
         document.getElementById("winPrize").style.display = "block";
@@ -267,26 +345,37 @@ function openDoor() {
         document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
         document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (Админ-доступ активирован!)";
         draw();
+    } else if (input === "RESET-SAVE") {
+        localStorage.removeItem("cynEnding100");
+        localStorage.removeItem("cynBestMango");
+        endingUnlocked = false;
+        bestMango = 0;
+        document.getElementById("gBest").innerText = "0";
+        document.getElementById("gGoal").innerText = "/100";
+        document.getElementById("gameStartBtn").innerText = "НАЧАТЬ ИГРУ";
+        document.getElementById("modeText").innerHTML = "Цель: помоги Син собрать <b>100 манго</b>, чтобы открыть концовку!";
+        document.getElementById("winPrize").style.display = "none";
+        secret.style.display = "none";
+        status.style.color = "#F7D652";
+        status.innerHTML = "🔄 Сейв полностью сброшен! Дверь закрыта, можно проходить заново.";
+        playSound("door");
     } else {
         secret.style.display = "none";
+        status.style.color = "#ff4444";
         status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
         playSound("splat");
     }
 }
 
-
-// НАСТРОЙКИ ИГРЫ И СОХРАНЕНИЯ
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
 var img = new Image(); img.src = "CynEP5.png";
 var p = 1, cx = 200, tx = 155, ty = 230, sc = 0, ms = 0, arr = [], on = false, t = 0, loop;
 var pts = [{x:155,y:135},{x:155,y:230},{x:405,y:135},{x:405,y:230}];
 
-// Загружаем сохраненный прогресс из памяти браузера
 var endingUnlocked = (localStorage.getItem("cynEnding100") === "true");
 var bestMango = Number(localStorage.getItem("cynBestMango")) || 0;
 document.getElementById("gBest").innerText = bestMango;
 
-// Если концовка уже открывалась раньше — сразу применяем бесконечный режим и показываем награду при открытии двери
 if (endingUnlocked) {
     document.getElementById("gGoal").innerText = " (∞)";
     document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
@@ -305,7 +394,6 @@ function runGame() {
     sc=0; ms=0; arr=[]; t=50; on=true;
     document.getElementById("gScore").innerText = 0;
     document.getElementById("gMiss").innerText = 0;
-    playSound("catch"); // Активируем звук кликом по кнопке старта
     frame();
 }
 
@@ -315,9 +403,8 @@ function draw() {
     ctx.fillStyle = "#fff3b0"; ctx.beginPath(); ctx.arc(292,80,14,0,7); ctx.fill();
     ctx.fillStyle = "#2b1710"; ctx.fillRect(0,280,560,60);
 
-    // 4 золотых желоба (исправлены координаты)
     ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 6; ctx.lineCap = "round";
-    var r = [[15,75,155,135], [15,170,155,230], [545,75,405,135], [545,170,405,230]];
+    var r = [[15,75,155,135],[15,170,155,230],[545,75,405,135],[545,170,405,230]];
     for(var i=0;i<4;i++){ 
         ctx.beginPath(); 
         ctx.moveTo(r[i][0], r[i][1]); 
