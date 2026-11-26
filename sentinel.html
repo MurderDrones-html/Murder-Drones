@@ -21,7 +21,29 @@
 <hr>
 
 <h1><p style="font-size:55px;color:#793EA6;font-family:arial;">Сентинел (Спарки)</p></h1>
-<img src="sentinel.png" width="300">
+<!-- КАРТИНКА ДИНОЗАВРИКА С ВСПЫШКОЙ И 2 РЕПЛИКАМИ -->
+<img src="sentinel.png" width="300" onclick="flashSentinel()" style="cursor:pointer;" title="Нажми на Сентинела!">
+<p id="sentinelText" style="font-size:18px;color:#F7D652;font-family:arial;margin-top:10px;"></p>
+
+<script>
+var dinoPhrases = [
+    "РРРРР!",
+    "Улыбочку рррр!"
+];
+
+function flashSentinel() {
+    // Яркая вспышка на весь экран (как в сериале!)
+    document.body.style.backgroundColor = "#ffffff";
+    setTimeout(function() {
+        document.body.style.backgroundColor = "#0b0c10";
+    }, 200);
+
+    // Выбираем одну из твоих 2 реплик
+    var randomLine = dinoPhrases[Math.floor(Math.random() * dinoPhrases.length)];
+    document.getElementById("sentinelText").innerHTML = "🦖 <b>Сентинел:</b> <i>«" + randomLine + "»</i> <small style='color:#ff4444;'>[ВСПЫШКА!]</small>";
+}
+</script>
+
 <br><br>
 
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="151824">
