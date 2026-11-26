@@ -215,14 +215,16 @@ function drawNoriCore() {
     nctx.fillStyle = aura;
     nctx.beginPath(); nctx.arc(300, 155, 55, 0, Math.PI * 2); nctx.fill();
 
-    // Рисуем ТВОЮ настоящую картинку Нори по центру!
+    // Рисуем картинку Нори по центру с сохранением правильных пропорций!
     if (noriImg.complete && noriImg.naturalWidth > 0) {
-        nctx.drawImage(noriImg, 255, 105, 90, 95);
+        var h = 95;
+        var w = h * (noriImg.naturalWidth / noriImg.naturalHeight);
+        nctx.drawImage(noriImg, 300 - w / 2, 105, w, h);
     } else {
-        // Запасной значок Solver, если картинка ещё не загрузилась
         nctx.strokeStyle = "#bb6bd9"; nctx.lineWidth = 3;
         nctx.strokeRect(275, 135, 50, 50);
     }
+
 
     // Если нажата атака — рисуем фиолетовый [NULL]
     if (pulseTimer > 0) {
