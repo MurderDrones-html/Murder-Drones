@@ -250,6 +250,13 @@ function openDoor() {
         status.style.color = "#F7D652";
         status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
         playSound("door");
+
+       } else if (code === "GLOBAL-RESET") {
+    localStorage.clear();
+    alert("ВСЕ СЕЙВЫ УДАЛЕНЫ!");
+    location.reload();
+}
+
         
   
 
