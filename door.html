@@ -252,13 +252,28 @@ function openDoor() {
         status.innerHTML = "";
         secret.style.display = "block";
         playSound("door");
-        draw(); // Отрисовываем холст сразу при открытии
+        draw();
+    } else if (input === "ADMIN-MANGO") {
+        // СЕКРЕТНЫЙ СКИП ДЛЯ АДМИНА
+        status.innerHTML = "";
+        secret.style.display = "block";
+        playSound("win");
+
+        // Мгновенно открываем концовку и бесконечный режим
+        endingUnlocked = true;
+        localStorage.setItem("cynEnding100", "true");
+        document.getElementById("winPrize").style.display = "block";
+        document.getElementById("gGoal").innerText = " (∞)";
+        document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
+        document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (Админ-доступ активирован!)";
+        draw();
     } else {
         secret.style.display = "none";
         status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
         playSound("splat");
     }
 }
+
 
 // НАСТРОЙКИ ИГРЫ И СОХРАНЕНИЯ
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
