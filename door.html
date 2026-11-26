@@ -108,6 +108,20 @@
 </div>
 
 <script>
+function openDoor() {
+    var input = document.getElementById("doorPassword").value.toUpperCase().trim();
+    var status = document.getElementById("doorStatus");
+    var secret = document.getElementById("secretBunker");
+
+    if (input === "MANGO-001") {
+        status.innerHTML = "";
+        secret.style.display = "block";
+    } else {
+        secret.style.display = "none";
+        status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
+    }
+}
+
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
 var img = new Image(); img.src = "CynEP5.png";
 var p = 1, cx = 200, tx = 155, ty = 230, sc = 0, ms = 0, arr = [], on = false, t = 0, loop;
