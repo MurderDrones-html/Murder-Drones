@@ -106,9 +106,10 @@ function drawPixelSentinel(x, y) {
                 if (col >= 5 && step === 1) offsetY = -4;
             }
 
-            if (ch === "B") dctx.fillStyle = "#2b3040";      // Тёмно-синий металл корпуса
+                       if (ch === "B") dctx.fillStyle = "#1E56A0";      // Насыщенный синий корпус Сентинела
             else if (ch === "Y") dctx.fillStyle = "#F7D652"; // Неоново-жёлтый глаз-визор
             else if (ch === "R") dctx.fillStyle = (flashTimer > 0) ? "#ffffff" : "#ff3333"; // Лампа вспышки
+
 
             dctx.fillRect(x + col * ps, y + row * ps + offsetY, ps, ps);
         }
