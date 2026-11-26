@@ -243,6 +243,16 @@ function openDoor() {
         status.style.color = "#F7D652";
         status.innerHTML = "🔄 Сейв полностью сброшен! Дверь закрыта, можно проходить заново.";
         playSound("door");
+        
+            } else if (input === "KHAN-LOVE") {
+        // СЕКРЕТНЫЙ КОД ОТ ХАНА
+        secret.style.display = "none";
+        status.style.color = "#F7D652";
+        status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
+        playSound("door");
+        
+    } else {
+
     } else {
         secret.style.display = "none";
         status.style.color = "#ff4444";
