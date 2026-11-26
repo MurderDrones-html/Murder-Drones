@@ -82,46 +82,7 @@
 
 <br>
 
-<!-- ОСНОВНОЙ БЛОК С ИНФОРМАЦИЕЙ ИЗ ТВОИХ ФАЙЛОВ -->
-<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="151824">
-<tr>
-<td>
-    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;">
-        <b>&nbsp;Основная информация&nbsp;</b>
-    </p>
-    <p style="font-size:14px;color:#ffffff;font-family:arial;">
-        • <b>Имя:</b> Эн (N) / Болванчик Эн / Банка с Болтами<br>
-        • <b>Роль:</b> Дрон-демонтажник, в прошлом — дрон-рабочий в поместье Тессы Эллиотт <br>
-        • <b>Статус:</b> Выжил, сражается на стороне союзников на Медно-9
-    </p>
-
-    <hr>
-
-    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;">
-        <b>&nbsp;Прошлое и отношения с V&nbsp;</b>
-    </p>
-    <p style="font-size:14px;color:#ffffff;font-family:arial;">
-        • <b>Поместье Тессы:</b> В прошлом в поместье Тессы Эллиотт застенчивая и добрая горничная Ви (V) испытывала тёплые чувства к Эну. <br>
-        • <b>Близкий друг и бывший возлюбленный V:</b> Эн — самый дорогой для Ви дрон, ради защиты которого она шла на жертвы. <br>
-        • <b>Тайна Solver:</b> Ви намеренно отталкивала Эна, чтобы уберечь его от страшной правды об Абсолютном Рассветчике (Solver) и вмешательстве Сверхвычислителя (Cyn).
-    </p>
-
-    <hr>
-
-    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;">
-        <b>&nbsp;Союзники и команда&nbsp;</b>
-    </p>
-    <p style="font-size:14px;color:#ffffff;font-family:arial;">
-        • <b>Серийная модель V (Serial Designation V):</b> Напарница и близкий друг, которая прошла путь от безжалостного врага до верной союзницы. <br>
-        • <b>Узи Доорман (Uzi):</b> Соратница в борьбе на Медно-9. <br>
-        • <b>Наш канал по дронам:</b> <i>сразу говорю мы все спокойные как V!</i> — <a href="https://discord.gg"><b style="color:#F7D652;">Тыкай сюда (Discord)</b></a>
-    </p>
-</td>
-</tr>
-</table>
-    <br>
-
-<!-- ПАСХАЛКА ЭНА: ЗОЛОТИСТЫЕ РЕТРИВЕРЫ -->
+<!-- ПАСХАЛКА ЭНА: ЗОЛОТИСТЫЕ РЕТРИВЕРЫ С КУЛДАУНОМ 1 СЕК -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -131,7 +92,7 @@
     <p id="nDogText" style="font-size:16px;color:#ffffff;font-family:arial;">
         Поглажено ретриверов: <b>0</b>
     </p>
-    <button type="button" onclick="petDog()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+    <button id="nBtn" type="button" onclick="petDog()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
         Погладить ретривера 🐶
     </button>
 </td>
@@ -141,6 +102,7 @@
 <script>
 var nSound = new Audio("n.mp3");
 var dogPets = Number(localStorage.getItem("nDogPets")) || 0;
+var isPetting = false;
 var nTxt = document.getElementById("nDogText");
 
 if (dogPets >= 15) {
@@ -151,11 +113,19 @@ if (dogPets >= 15) {
 }
 
 function petDog() {
-    // ИГРАЕМ ЗВУК РЕТРИВЕРА!
+    if (isPetting) return;
+
     try { nSound.currentTime = 0; nSound.play(); } catch (e) {}
 
+    isPetting = true;
+    var btn = document.getElementById("nBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Ретривер виляет хвостом... 🐕";
+
     var dogPhrases = [
-        "Эн: «Ух ты, смотри какой мягкий! Золотистые ретриверов — лучшие!»",
+        "Эн: «Ух ты, смотри какой мягкий! Золотистые ретриверы — лучшие!»",
         "Эн: «Знаешь, у них даже есть специальные лапки для плавания!»",
         "Эн: «Я даже нарисовал одного в своём блокноте! :D»",
         "Эн: «Узи говорит, что я слишком много про них болтаю... но они же милые!»",
@@ -176,6 +146,16 @@ function petDog() {
         nTxt.style.color = "#ffffff";
         nTxt.innerHTML = "Поглажено ретриверов: <b>" + dogPets + "</b> / 15<br><i>" + line + "</i>";
     }
+
+    // Кулдаун 1.5 секунды (1500 мс)
+    setTimeout(function() {
+        isPetting = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#F7D652";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Погладить ретривера 🐶";
+    }, 1500);
+
 }
 </script>
 
