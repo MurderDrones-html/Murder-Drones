@@ -65,6 +65,169 @@ function flashSentinel() {
 </td>
 </tr>
 </table>
+<script>
+var dc = document.getElementById("dinoGame"), dctx = dc.getContext("2d");
+
+var dy = 140, vy = 0, grav = 0.75, grounded = true;
+var obs = [], drone = null, dScore = 0, dFrame = 0, dRun = false, dLoop, flashTimer = 0;
+var dBest = Number(localStorage.getItem("dinoBestRun")) || 0;
+document.getElementById("dBest").innerText = dBest;
+
+// Пиксельная матрица Сентинела (смотрит вправо, 13x12 пикселей)
+// B = тёмный корпус, G = серый металл, Y = жёлтый визор, R = красный огонь вспышки
+var dinoSprite = [
+    "......BBBBBB.",
+    ".....BBBBYYBB",
+    ".....BBBBYYBR",
+    ".....BBBBBBBB",
+    ".....BBBBBBB.",
+    "B...BBBBBB...",
+    "BB.BBBBBBBB..",
+    ".BBBBBBBB.BB.",
+    "..BBBBBBB....",
+    "...BB.BB.....",
+    "...B...B.....",
+    "..BB..BB....."
+];
+
+function drawPixelSentinel(x, y) {
+    var ps = 4; // размер одного пикселя (4x4 px)
+    var step = (dRun && grounded) ? Math.floor(dFrame / 6) % 2 : 0; // смена лап при беге
+
+    for (var row = 0; row < dinoSprite.length; row++) {
+        for (var col = 0; col < dinoSprite[row].length; col++) {
+            var ch = dinoSprite[row][col];
+            if (ch === ".") continue;
+
+            // Анимация перебора лап в нижних двух рядах
+            var offsetY = 0;
+            if (row >= 10) {
+                if (col < 5 && step === 0) offsetY = -4;
+                if (col >= 5 && step === 1) offsetY = -4;
+            }
+
+            if (ch === "B") dctx.fillStyle = "#2b3040";      // Тёмно-синий металл корпуса
+            else if (ch === "Y") dctx.fillStyle = "#F7D652"; // Неоново-жёлтый глаз-визор
+            else if (ch === "R") dctx.fillStyle = (flashTimer > 0) ? "#ffffff" : "#ff3333"; // Лампа вспышки
+
+            dctx.fillRect(x + col * ps, y + row * ps + offsetY, ps, ps);
+        }
+    }
+}
+document.addEventListener("keydown", function(e) {
+    if ((e.code === "Space" || e.key.toLowerCase() === "w" || e.key === "ArrowUp") && dRun) {
+        e.preventDefault();
+        dinoJump();
+    }
+    if (e.key.toLowerCase() === "f" || e.key.toLowerCase() === "а") {
+        dinoFlash();
+    }
+});
+
+function dinoJump() {
+    if (dRun && grounded) {
+        vy = -13;
+        grounded = false;
+    }
+}
+
+function dinoFlash() {
+    if (!dRun) return;
+    flashTimer = 6;
+    if (drone && drone.x > 100 && drone.x < 520) {
+        drone = null;
+        dScore += 5;
+    }
+}
+
+function startDino() {
+    cancelAnimationFrame(dLoop);
+    dy = 142; vy = 0; grounded = true;
+    obs = []; drone = null; dScore = 0; dFrame = 0; dRun = true;
+    document.getElementById("dScore").innerText = 0;
+    dinoLoop();
+}
+
+function drawDinoScene() {
+    dctx.fillStyle = "#13151d"; dctx.fillRect(0, 0, 600, 190);
+    dctx.fillStyle = "#222634"; dctx.fillRect(0, 190, 600, 30);
+    dctx.strokeStyle = "#793EA6"; dctx.lineWidth = 2;
+    dctx.beginPath(); dctx.moveTo(0, 190); dctx.lineTo(600, 190); dctx.stroke();
+
+    // Рисуем нашего пиксельного Сентинела с анимацией лап!
+    drawPixelSentinel(50, dy);
+
+    for (var i = 0; i < obs.length; i++) {
+        dctx.fillStyle = "#F7D652";
+        dctx.fillRect(obs[i].x, 155, 28, 35);
+        dctx.fillStyle = "#000000"; dctx.font = "bold 9px Arial";
+        dctx.fillText("JCJ", obs[i].x + 5, 176);
+    }
+
+    if (drone) {
+        dctx.font = "26px Arial";
+        dctx.fillText("🤖", drone.x, 75);
+        dctx.fillStyle = "#ff4444"; dctx.font = "bold 11px Arial";
+        dctx.fillText("ВСПЫШКА!", drone.x - 10, 48);
+    }
+
+    if (flashTimer > 0) {
+        dctx.fillStyle = "rgba(255, 255, 255, " + (flashTimer * 0.14) + ")";
+        dctx.fillRect(0, 0, 600, 220);
+        flashTimer--;
+    }
+}
+
+function dinoLoop() {
+    if (!dRun) return;
+    dFrame++;
+
+    dy += vy;
+    if (dy >= 142) { dy = 142; vy = 0; grounded = true; }
+    else { vy += grav; }
+
+    if (dFrame % 10 === 0) {
+        dScore++;
+        document.getElementById("dScore").innerText = dScore;
+        if (dScore > dBest) {
+            dBest = dScore;
+            localStorage.setItem("dinoBestRun", dBest);
+            document.getElementById("dBest").innerText = dBest;
+        }
+    }
+
+    var spd = 5 + Math.min(5, dScore * 0.03);
+
+    if (dFrame % Math.max(55, 95 - Math.floor(dScore / 3)) === 0) {
+        obs.push({ x: 600 });
+    }
+    if (!drone && dFrame % 220 === 0) {
+        drone = { x: 600 };
+    }
+
+    for (var i = obs.length - 1; i >= 0; i--) {
+        obs[i].x -= spd;
+        if (obs[i].x < 94 && obs[i].x + 28 > 56 && dy + 44 > 155) {
+            dRun = false; drawDinoScene();
+            dctx.fillStyle = "rgba(0,0,0,0.8)"; dctx.fillRect(0, 0, 600, 220);
+            dctx.fillStyle = "#ff4444"; dctx.font = "bold 24px Arial";
+            dctx.fillText("ВРЕЗАЛСЯ В ЯЩИК! Дистанция: " + dScore + " м", 115, 115);
+            return;
+        }
+        if (obs[i].x < -30) obs.splice(i, 1);
+    }
+
+    if (drone) {
+        drone.x -= spd * 1.1;
+        if (drone.x < -30) drone = null;
+    }
+
+    drawDinoScene();
+    dLoop = requestAnimationFrame(dinoLoop);
+}
+
+drawDinoScene();
+</script>
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
