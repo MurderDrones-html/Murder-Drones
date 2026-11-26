@@ -43,6 +43,76 @@
 </td>
 </tr>
 </table>
+<br>
+
+<!-- ПАСХАЛКА ТЭДА: БРО-ПОДДЕРЖКА -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#000000;background-color:#39FF14;font-family:arial;padding:8px;">
+        <b>&nbsp;🧢 СЧЁТЧИК КРУТИЗНЫ ОТ ТЭДА&nbsp;</b>
+    </p>
+    <p id="thadText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Дано «пять» Тэду: <b>0</b> / 10
+    </p>
+    <button id="thadBtn" type="button" onclick="highFiveThad()" style="background-color:#39FF14;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Дать пять Тэду! ✋
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+var thadFives = Number(localStorage.getItem("thadHighFives")) || 0;
+var isThadBusy = false;
+var tTxt = document.getElementById("thadText");
+
+if (thadFives >= 10) {
+    tTxt.style.color = "#39FF14";
+    tTxt.innerHTML = "🔥 Дано «пять»: <b>" + thadFives + "</b> — <i>Тэд: «Йоу, бро! Ты официально самый крутой дрон в бункере после Узи!»</i>";
+} else if (thadFives > 0) {
+    tTxt.innerHTML = "Дано «пять» Тэду: <b>" + thadFives + "</b> / 10";
+}
+
+function highFiveThad() {
+    if (isThadBusy) return;
+    isThadBusy = true;
+
+    var btn = document.getElementById("thadBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Йоу, мощно! 🤜🤛";
+
+    var thadPhrases = [
+        "Тэд: «Классическая Узи — снова спасает всех нас!»",
+        "Тэд: «Эй, Эн! Отличный прикид, приятель!»",
+        "Тэд: «Даже если на нас нападут монстры, мы прорвёмся!»",
+        "Тэд: «Лиззи опять зависает в телефоне, но она нормальная.»",
+        "Тэд: «Мощный удар, бро! Заряд бодрости на 100%!»"
+    ];
+
+    thadFives++;
+    localStorage.setItem("thadHighFives", thadFives);
+
+    if (thadFives >= 10) {
+        tTxt.style.color = "#39FF14";
+        tTxt.innerHTML = "🔥 Дано «пять»: <b>" + thadFives + "</b> — <i>Тэд: «Йоу, бро! Ты официально самый крутой дрон в бункере после Узи!»</i>";
+    } else {
+        var line = thadPhrases[Math.floor(Math.random() * thadPhrases.length)];
+        tTxt.style.color = "#ffffff";
+        tTxt.innerHTML = "Дано «пять» Тэду: <b>" + thadFives + "</b> / 10<br><i>" + line + "</i>";
+    }
+
+    setTimeout(function() {
+        isThadBusy = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#39FF14";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Дать пять Тэду! ✋";
+    }, 800);
+}
+</script>
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
