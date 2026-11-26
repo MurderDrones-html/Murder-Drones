@@ -113,29 +113,35 @@ var obs = [], drone = null, dScore = 0, dFrame = 0, dRun = false, dLoop, flashTi
 var dBest = Number(localStorage.getItem("dinoBestRun")) || 0;
 document.getElementById("dBest").innerText = dBest;
 
-// Детализированный Спарки в ковбойской шляпе (18x16 пикселей)
-// H = коричневая шляпа, L = лента шляпы, B = синий металл, C = голубой неон, R = красный глаз/вспышка, W = когти
+// Сетка 22x22 пикселя в точности с пропорциями, челюстью, спинным гребнем и длинным хвостом как в Google Dino!
+// H = шляпа, L = лента, B = синий корпус, D = тёмно-синяя тень, C = голубой неон, R = красный глаз/вспышка, W = белые зубы/когти
 var dinoSprite = [
-    ".........HHHH.....",
-    "........HHHHHH....",
-    ".......LLLLLLLL...",
-    "......HHHHHHHHHH..",
-    ".......BBBBBBBB...",
-    "......BBBBBRRRBB..",
-    "......BBBBBRRRBB..",
-    "......BBBBBBBBBB..",
-    "B......BBBBBBBB...",
-    "BB....BBCCBBBB....",
-    ".BB..BBBCCBBBBWW..",
-    "..BBBBBBBBBBBB....",
-    "...BBBBBBBBBB.....",
-    ".....BBB..BBB.....",
-    ".....BB....BB.....",
-    "....BWW...BWW....."
+    "............HHHHHH....",
+    "...........HHHHHHHH...",
+    "..........LLLLLLLLLL..",
+    ".........HHHHHHHHHHHH.",
+    "...........BBBBBBBBBB.",
+    "..........BBBBRRBBBBBB",
+    "..........BBBBBBBBBBBB",
+    "..........BBBBBBBBBBBB",
+    "..........BBBBBBBB....",
+    "..........BBBBWWWWW...",
+    "..........BBBBBBBB....",
+    "B........BBBBBBBB.....",
+    "BB......BBCCBBBB......",
+    "BBB....BBBCCBBBBBB....",
+    "BBBB..BBBBCCBBBB.BW...",
+    ".BBBBBBBBBBBBBBB......",
+    "..BBBBBBBBBBBBBB......",
+    "...BBBBBBBBBBBB.......",
+    "....BBBBBBBBBB........",
+    ".....BBB...BBB........",
+    ".....BB.....BB........",
+    ".....BWW....BWW......."
 ];
 
 function drawPixelSentinel(x, y) {
-    var ps = 4;
+    var ps = 3; // Чёткий пиксель 3x3 (общий размер 66x66 px, очень аккуратный и детальный)
     var step = (dRun && grounded) ? Math.floor(dFrame / 5) % 2 : 0;
 
     for (var row = 0; row < dinoSprite.length; row++) {
@@ -144,16 +150,17 @@ function drawPixelSentinel(x, y) {
             if (ch === ".") continue;
 
             var offsetY = 0;
-            if (row >= 13) {
-                if (col < 8 && step === 0) offsetY = -4;
-                if (col >= 8 && step === 1) offsetY = -4;
+            // Анимация бега лап в нижних 3 рядах
+            if (row >= 19) {
+                if (col < 10 && step === 0) offsetY = -3;
+                if (col >= 10 && step === 1) offsetY = -3;
             }
 
             if (ch === "H") dctx.fillStyle = "#6F4E37";      // Ковбойская шляпа
             else if (ch === "L") dctx.fillStyle = "#F7D652"; // Золотая лента на шляпе
-            else if (ch === "B") dctx.fillStyle = "#1E56A0"; // Синяя броня Сентинела
-            else if (ch === "C") dctx.fillStyle = "#00E5FF"; // Голубые неоновые полосы
-            else if (ch === "W") dctx.fillStyle = "#E0E0E0"; // Стальные когти
+            else if (ch === "B") dctx.fillStyle = "#1E56A0"; // Синий корпус Сентинела
+            else if (ch === "C") dctx.fillStyle = "#00E5FF"; // Голубой неон на спине
+            else if (ch === "W") dctx.fillStyle = "#FFFFFF"; // Зубы в пасти и когти
             else if (ch === "R") dctx.fillStyle = (flashTimer > 0) ? "#ffffff" : "#FF2A2A"; // Красный визор
 
             dctx.fillRect(x + col * ps, y + row * ps + offsetY, ps, ps);
@@ -286,7 +293,8 @@ function dinoLoop() {
     dFrame++;
 
     dy += vy;
-    if (dy >= 126) { dy = 126; vy = 0; grounded = true; }
+    // Новая высота земли для динозавра 66x66 px — ровно 124
+    if (dy >= 124) { dy = 124; vy = 0; grounded = true; }
     else { vy += grav; }
 
     if (dFrame % 10 === 0) {
@@ -301,17 +309,16 @@ function dinoLoop() {
 
     var spd = 5.2 + Math.min(5, dScore * 0.03);
 
-    // Случайные комбинации ящиков (1 ящик, 2 ящика подряд или высокая стопка из 2 ящиков!)
     var spawnGap = Math.max(58, 95 - Math.floor(dScore / 3));
     if (dFrame % spawnGap === 0) {
         var type = Math.floor(Math.random() * 3);
         if (type === 0) {
-            obs.push({ x: 600, y: 156 }); // Одиночный ящик
+            obs.push({ x: 600, y: 156 });
         } else if (type === 1) {
-            obs.push({ x: 600, y: 156 }); // Два ящика рядом
+            obs.push({ x: 600, y: 156 });
             obs.push({ x: 634, y: 156 });
         } else {
-            obs.push({ x: 600, y: 156 }); // Высокая башня из двух ящиков!
+            obs.push({ x: 600, y: 156 });
             obs.push({ x: 600, y: 122 });
         }
     }
@@ -320,10 +327,9 @@ function dinoLoop() {
         drone = { x: 600 };
     }
 
-    // Движение ящиков и точная проверка столкновений
     for (var i = obs.length - 1; i >= 0; i--) {
         obs[i].x -= spd;
-        if (obs[i].x < 102 && obs[i].x + 28 > 58 && dy + 60 > obs[i].y + 4) {
+        if (obs[i].x < 104 && obs[i].x + 28 > 55 && dy + 62 > obs[i].y + 4) {
             dRun = false; drawDinoScene();
             dctx.fillStyle = "rgba(0,0,0,0.82)"; dctx.fillRect(0, 0, 600, 220);
             dctx.fillStyle = "#ff4444"; dctx.font = "bold 24px Arial";
@@ -341,6 +347,7 @@ function dinoLoop() {
     drawDinoScene();
     dLoop = requestAnimationFrame(dinoLoop);
 }
+
 
 drawDinoScene();
 </script>
