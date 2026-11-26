@@ -27,21 +27,35 @@
 <p id="sentinelText" style="font-size:18px;color:#F7D652;font-family:arial;margin-top:10px;"></p>
 
 <script>
+var flashSound = new Audio("camera-flash.mp3");
+var isFlashing = false;
 var dinoPhrases = [
     "РРРРР!",
     "Улыбочку рррр!"
 ];
 
 function flashSentinel() {
-    // Яркая вспышка на весь экран (как в сериале!)
+    if (isFlashing) return;
+    isFlashing = true;
+
+    try { flashSound.currentTime = 0; flashSound.play(); } catch (e) {}
+
+    var pic = document.getElementById("sentinelPic");
+    if (pic) pic.style.opacity = "0.5";
+
     document.body.style.backgroundColor = "#ffffff";
     setTimeout(function() {
         document.body.style.backgroundColor = "#0b0c10";
     }, 200);
 
-    // Выбираем одну из твоих 2 реплик
     var randomLine = dinoPhrases[Math.floor(Math.random() * dinoPhrases.length)];
-    document.getElementById("sentinelText").innerHTML = "🦖 <b>Сентинел:</b> <i>«" + randomLine + "»</i> <small style='color:#ff4444;'>[ВСПЫШКА!]</small>";
+    document.getElementById("sentinelText").innerHTML = "🦖 <b>Сентинел:</b> <i>«" + randomLine + "»</i> <small style='color:#ff4444;'>[Перезарядка 2 сек...]</small>";
+
+    setTimeout(function() {
+        isFlashing = false;
+        if (pic) pic.style.opacity = "1";
+        document.getElementById("sentinelText").innerHTML = "🦖 <b>Сентинел:</b> <i>«" + randomLine + "»</i> <small style='color:#39FF14;'>[ГОТОВ]</small>";
+    }, 2000);
 }
 </script>
 
@@ -238,11 +252,13 @@ function dinoJump() {
         grounded = false;
     }
 }
-
 var flashCooldown = false;
 
 function dinoFlash() {
     if (!dRun || flashCooldown) return;
+
+    // Играем звук вспышки камеры!
+    try { flashSound.currentTime = 0; flashSound.play(); } catch (e) {}
 
     flashCooldown = true;
     flashTimer = 6;
@@ -277,6 +293,7 @@ function dinoFlash() {
             }
         }
     }, 1000);
+}
 }
 
 
