@@ -81,6 +81,47 @@ function flashSentinel() {
 </table>
     <br>
 
+<!-- ТАБЛИЦА РЕКОРДОВ СЕНТИНЕЛА (CABIN FEVER RUN) -->
+<table width="850" border="1" cellpadding="15" cellspacing="0" bgcolor="151824">
+<tr>
+<td align="center">
+
+    <p style="font-size:18px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;margin-top:0;">
+        <b>🦖 ТОП БЕГУНОВ CABIN FEVER (<span id="dinoTopCount">0</span>)</b>
+    </p>
+
+    <p style="font-size:13px;color:#cccccc;font-family:arial;">
+        Пробеги максимальную дистанцию за Спарки и скинь скрин рекорда в наш Discord!
+    </p>
+
+    <table width="100%" border="1" cellpadding="8" cellspacing="0" bgcolor="181a24">
+    <tr bgcolor="13151d">
+        <td width="15%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>#</b></p></td>
+        <td width="55%"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Ник в Discord</b></p></td>
+        <td width="30%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Дистанция</b></p></td>
+    </tr>
+
+    <!-- 1 МЕСТО (АДМИН) -->
+    <tr class="dino-row">
+        <td align="center"><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
+        <td><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Maka.kar.kar3</b></p></td>
+        <td align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>2000 м 🦖</b></p></td>
+    </tr>
+
+    <!-- ПУСТОЕ МЕСТО ДЛЯ ИГРОКОВ -->
+    <tr>
+    <td align="center"><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
+        <td><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>N_Destro (Админ)</b></p></td>
+        <td align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>726 м 🦖</b></p></td>
+    </tr>
+    </table>
+
+</td>
+</tr>
+</table>
+
+    <br>
+
 <!-- ЭКРАН ИГРЫ СЕНТИНЕЛА -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
@@ -122,6 +163,7 @@ function flashSentinel() {
 </table>
 
 <script>
+    document.getElementById("dinoTopCount").innerText = document.querySelectorAll(".dino-row").length;
 var dc = document.getElementById("dinoGame"), dctx = dc.getContext("2d");
 
 var dy = 126, vy = 0, grav = 0.75, grounded = true;
