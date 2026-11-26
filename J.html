@@ -123,7 +123,7 @@
 </table>
 
 <script>
-// Загружаем сохранённые нажатия на ручку из памяти браузера
+var jSound = new Audio("j.mp3");
 var penClicks = Number(localStorage.getItem("jPenClicks")) || 0;
 var txt = document.getElementById("penText");
 
@@ -134,8 +134,10 @@ if (penClicks >= 10) {
 }
 
 function clickPen() {
+    // ИГРАЕМ ЗВУК ЩЕЛЧКА РУЧКИ!
+    try { jSound.currentTime = 0; jSound.play(); } catch (e) {}
+
     penClicks++;
-    // Сохраняем нажатия в память браузера
     localStorage.setItem("jPenClicks", penClicks);
 
     if (penClicks === 10) {
@@ -150,6 +152,7 @@ function clickPen() {
     }
 }
 </script>
+
 
 
 
