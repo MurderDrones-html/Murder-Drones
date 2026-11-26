@@ -144,6 +144,62 @@
 </td>
 </tr>
 </table>
+<br>
+
+<!-- ПАСХАЛКА ВИ: ПУЗЫРИ И ХАРАКТЕР -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;">
+        <b>&nbsp;🫧 ТЕСТ НА СПОКОЙСТВИЕ ОТ ВИ (V)&nbsp;</b>
+    </p>
+    <p id="vBubbleText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Надуто пузырей: <b>0</b>
+    </p>
+    <button type="button" onclick="blowBubble()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Надуть мыльный пузырь 🫧
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+// Загружаем сохранённое количество пузырей из памяти браузера
+var vBubbles = Number(localStorage.getItem("vBubblesCount")) || 0;
+var vTxt = document.getElementById("vBubbleText");
+
+if (vBubbles >= 12) {
+    vTxt.style.color = "#F7D652";
+    vTxt.innerHTML = "💛 Надуто пузырей: <b>" + vBubbles + "</b> — <i>Ви: «Ладно, ты нормальный. Присмотри за Эном и этой фиолетовой, пока я разбираюсь с динозаврами.»</i>";
+} else if (vBubbles > 0) {
+    vTxt.innerHTML = "Надуто пузырей: <b>" + vBubbles + "</b> / 12";
+}
+
+function blowBubble() {
+    var vPhrases = [
+        "Ви: «Мы все тут абсолютно спокойные. *Щёлкает когтями*»",
+        "Ви: «Смотри, какой ровный пузырь... *Лопает его когтем*»",
+        "Ви: «Думаешь, я боюсь этих сентинелов? Ха. Смешно.»",
+        "Ви: «Эн опять про своих ретриверов болтал, да?»",
+        "Ви: «Не вздумай никому говорить, что я тут пузыри пускаю!»"
+    ];
+
+    vBubbles++;
+    localStorage.setItem("vBubblesCount", vBubbles);
+
+    if (vBubbles === 12) {
+        vTxt.style.color = "#F7D652";
+        vTxt.innerHTML = "💛 <b>12/12!</b> Ви: <i>«Ладно, ты нормальный. Присмотри за Эном и этой фиолетовой... Я в вас верю.»</i>";
+    } else if (vBubbles > 12) {
+        vTxt.style.color = "#F7D652";
+        vTxt.innerHTML = "💛 Надуто пузырей: <b>" + vBubbles + "</b> — <i>Ви: «Ладно, ты нормальный. Присмотри за Эном и этой фиолетовой, пока я разбираюсь с динозаврами.»</i>";
+    } else {
+        var line = vPhrases[Math.floor(Math.random() * vPhrases.length)];
+        vTxt.style.color = "#ffffff";
+        vTxt.innerHTML = "Надуто пузырей: <b>" + vBubbles + "</b> / 12<br><i>" + line + "</i>";
+    }
+}
+</script>
 
 <br><br>
 <div align="left">
