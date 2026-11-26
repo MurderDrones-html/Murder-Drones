@@ -118,6 +118,63 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАСХАЛКА ЭНА: ЗОЛОТИСТЫЕ РЕТРИВЕРЫ -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;">
+        <b>&nbsp;🐶 ТЕРАПИЯ ЗОЛОТИСТЫМИ РЕТРИВЕРАМИ (ОТ ЭНА)&nbsp;</b>
+    </p>
+    <p id="nDogText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Поглажено ретриверов: <b>0</b>
+    </p>
+    <button type="button" onclick="petDog()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Погладить ретривера 🐶
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+// Загружаем количество поглаживаний из памяти браузера
+var dogPets = Number(localStorage.getItem("nDogPets")) || 0;
+var nTxt = document.getElementById("nDogText");
+
+if (dogPets >= 15) {
+    nTxt.style.color = "#F7D652";
+    nTxt.innerHTML = "💛 Поглажено ретриверов: <b>" + dogPets + "</b> — <i>Эн: «Ты официальный лучший друг всех собачек на Медно-9!»</i>";
+} else if (dogPets > 0) {
+    nTxt.innerHTML = "Поглажено ретриверов: <b>" + dogPets + "</b> / 15";
+}
+
+function petDog() {
+    var dogPhrases = [
+        "Эн: «Ух ты, смотри какой мягкий! Золотистые ретриверы — лучшие!»",
+        "Эн: «Знаешь, у них даже есть специальные лапки для плавания!»",
+        "Эн: «Я даже нарисовал одного в своём блокноте! :D»",
+        "Эн: «Узи говорит, что я слишком много про них болтаю... но они же милые!»",
+        "Эн: «Гав-гав! Уровень счастья на максимуме!»"
+    ];
+
+    dogPets++;
+    localStorage.setItem("nDogPets", dogPets);
+
+    if (dogPets === 15) {
+        nTxt.style.color = "#F7D652";
+        nTxt.innerHTML = "💛 <b>15/15!</b> Эн: <i>«Ого, ты обожаешь собачек так же сильно, как и я! Секрет: Ви на самом деле очень добрая, просто стесняется!»</i>";
+    } else if (dogPets > 15) {
+        nTxt.style.color = "#F7D652";
+        nTxt.innerHTML = "💛 Поглажено ретриверов: <b>" + dogPets + "</b> — <i>Эн: «Ты официальный лучший друг всех собачек на Медно-9!»</i>";
+    } else {
+        var line = dogPhrases[Math.floor(Math.random() * dogPhrases.length)];
+        nTxt.style.color = "#ffffff";
+        nTxt.innerHTML = "Поглажено ретриверов: <b>" + dogPets + "</b> / 15<br><i>" + line + "</i>";
+    }
+}
+</script>
+
 
 <br><br>
 <div align="left">
