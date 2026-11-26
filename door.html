@@ -47,6 +47,7 @@
 
 <!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
 <!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
+<!-- ПАНЕЛЬ ДОСТУПА К ДВЕРИ №1 -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -57,11 +58,11 @@
 
     <p style="font-size:15px;color:#ffffff;font-family:arial;">
         Дверь герметично закрыта по приказу Хана Доормана.<br>
-        Чтобы открыть её, введи секретный код взлома:
+        Чтобы открыть её, введи секретный код взлома (у тебя 5 попыток до блокировки на 5 минут):
     </p>
 
     <input type="text" id="doorPassword" placeholder="Введи пароль..." style="padding:10px;font-size:16px;font-family:arial;">
-    <button type="button" onclick="openDoor()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
+    <button id="doorBtn" type="button" onclick="openDoor()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
         ОТКРЫТЬ ДВЕРЬ
     </button>
 
@@ -95,7 +96,7 @@
             НАЧАТЬ ИГРУ
         </button>
 
-        <!-- СЕКРЕТНАЯ КОНЦОВКА (ОТКРЫВАЕТСЯ НА 100 МАНГО) -->
+        <!-- СЕКРЕТНАЯ КОНЦОВКА -->
         <div id="winPrize" style="display:none;margin-top:20px;border-top:2px solid #F7D652;padding-top:15px;">
             <p style="font-size:22px;color:#F7D652;font-family:arial;">
                 <b>🏆 КОНЦОВКА ОТКРЫТА! СИН В РАЮ ИЗ МАНГО! [Хихикает]</b>
@@ -107,9 +108,23 @@
         </div>
     </div>
 
+    <!-- ПОТАЙНАЯ ТОЧКА АДМИНА В ПРАВОМ НИЖНЕМ УГЛУ -->
+    <div align="right" style="margin-top:10px;">
+        <span onclick="toggleAdminBox()" style="color:#1e212e;cursor:pointer;font-size:12px;" title="Admin">•</span>
+    </div>
+
+    <div id="secretAdminBox" style="display:none;margin-top:10px;border-top:1px dashed #333;padding-top:10px;">
+        <input type="password" id="adminUnlockInput" placeholder="Admin override..." style="padding:6px;font-size:13px;background:#0b0c10;color:#F7D652;border:1px solid #555;">
+        <button type="button" onclick="adminUnlockDoor()" style="padding:6px 12px;font-size:13px;background:#793EA6;color:#F7D652;border:none;cursor:pointer;">
+            Сбросить таймер
+        </button>
+    </div>
+
 </td>
 </tr>
 </table>
+
+
 
 <br>
 
@@ -143,9 +158,11 @@
             <td><p style="font-size:13px;color:#aaaaaa;font-family:arial;margin:0;"><i>Место свободно...</i></p></td>
         </tr>
         </table>
+        
     </td>
     </tr>
     </table>
+    
 </td>
 
 <td width="20"></td>
@@ -190,7 +207,6 @@
 document.getElementById("hackCount").innerText = document.querySelectorAll(".hack-row").length;
 document.getElementById("mangoCount").innerText = document.querySelectorAll(".mango-row").length;
 
-// Загружаем твои реальные звуки из папки
 var sounds = {
     door: new Audio("door.mp3"),
     catch: new Audio("mango2.mp3"),
@@ -199,28 +215,111 @@ var sounds = {
     fail: new Audio("fail.mp3")
 };
 
-
 function playSound(type) {
     try {
         var s = sounds[type];
-        if (s) {
-            s.currentTime = 0; // Сбрасываем на начало для быстрых повторов
-            s.play();
-        }
+        if (s) { s.currentTime = 0; s.play(); }
     } catch (e) {}
 }
 
+var doorAttempts = Number(localStorage.getItem("doorWrongAttempts")) || 0;
+
+function checkDoorLock() {
+    var lockUntil = Number(localStorage.getItem("doorLockUntil")) || 0;
+    var btn = document.getElementById("doorBtn");
+    var inputField = document.getElementById("doorPassword");
+    var status = document.getElementById("doorStatus");
+
+    if (lockUntil > Date.now()) {
+        var secLeft = Math.ceil((lockUntil - Date.now()) / 1000);
+        var mins = Math.floor(secLeft / 60);
+        var secs = secLeft % 60;
+        var timeStr = mins + ":" + (secs < 10 ? "0" + secs : secs);
+
+        if (btn) {
+            btn.disabled = true;
+            btn.style.backgroundColor = "#555555";
+            btn.style.color = "#cccccc";
+            btn.innerHTML = "ЗАБЛОКИРОВАНО (" + timeStr + ")";
+        }
+        if (inputField) inputField.disabled = true;
+
+        status.style.color = "#ff4444";
+        status.innerHTML = "🚨 <b>ТРЕВОГА!</b> Слишком много неверных попыток! Дверь заблокирована на <b>" + timeStr + "</b>";
+
+        setTimeout(checkDoorLock, 1000);
+        return true;
+    } else if (lockUntil > 0) {
+        localStorage.removeItem("doorLockUntil");
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
+
+        if (btn) {
+            btn.disabled = false;
+            btn.style.backgroundColor = "#F7D652";
+            btn.style.color = "#000000";
+            btn.innerHTML = "ОТКРЫТЬ ДВЕРЬ";
+        }
+        if (inputField) inputField.disabled = false;
+        status.style.color = "#39FF14";
+        status.innerHTML = "🔓 Блокировка снята! У тебя снова 5 попыток.";
+    }
+    return false;
+}
+
+checkDoorLock();
+
+function toggleAdminBox() {
+    var box = document.getElementById("secretAdminBox");
+    box.style.display = (box.style.display === "none") ? "block" : "none";
+}
+
+function adminUnlockDoor() {
+    var code = document.getElementById("adminUnlockInput").value.toUpperCase().trim();
+    if (code === "UNLOCK-DOOR") {
+        localStorage.removeItem("doorLockUntil");
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
+
+        var btn = document.getElementById("doorBtn");
+        var inputField = document.getElementById("doorPassword");
+        var status = document.getElementById("doorStatus");
+
+        if (btn) {
+            btn.disabled = false;
+            btn.style.backgroundColor = "#F7D652";
+            btn.style.color = "#000000";
+            btn.innerHTML = "ОТКРЫТЬ ДВЕРЬ";
+        }
+        if (inputField) inputField.disabled = false;
+
+        status.style.color = "#39FF14";
+        status.innerHTML = "🛠️ <b>АДМИН-ДОСТУП:</b> Блокировка двери принудительно снята!";
+        document.getElementById("adminUnlockInput").value = "";
+        document.getElementById("secretAdminBox").style.display = "none";
+        playSound("door");
+    } else {
+        playSound("fail");
+    }
+}
+
 function openDoor() {
+    if (checkDoorLock()) return;
+
     var input = document.getElementById("doorPassword").value.toUpperCase().trim();
     var status = document.getElementById("doorStatus");
     var secret = document.getElementById("secretBunker");
 
     if (input === "MANGO-001") {
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
         status.innerHTML = "";
         secret.style.display = "block";
         playSound("door");
         draw();
     } else if (input === "ADMIN-MANGO") {
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
         status.innerHTML = "";
         secret.style.display = "block";
         playSound("win");
@@ -232,20 +331,11 @@ function openDoor() {
         document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
         document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (Админ-доступ активирован!)";
         draw();
-   
-        
-            } else if (input === "KHAN-LOVE") {
-        // СЕКРЕТНЫЙ КОД ОТ ХАНА
-        secret.style.display = "none";
-        status.style.color = "#F7D652";
-        status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
-        playSound("door");
-
-
     } else if (input === "RESET-SAVE") {
-        // СБРОС ТОЛЬКО ИГРЫ С МАНГО И КОНЦОВКИ ДВЕРИ
         localStorage.removeItem("cynEnding100");
         localStorage.removeItem("cynBestMango");
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
         endingUnlocked = false;
         bestMango = 0;
         document.getElementById("gBest").innerText = "0";
@@ -257,10 +347,9 @@ function openDoor() {
         status.style.color = "#F7D652";
         status.innerHTML = "🔄 Сейв игры с манго сброшен! Клики у персонажей остались.";
         playSound("door");
-
     } else if (input === "GLOBAL-RESET") {
-        // ПОЛНЫЙ СБРОС ВСЕГО САЙТА ДЛЯ ТЕБЯ (ВСЕХ ПЕРСОНАЖЕЙ + ДВЕРЬ)
         localStorage.clear();
+        doorAttempts = 0;
         endingUnlocked = false;
         bestMango = 0;
         document.getElementById("gBest").innerText = "0";
@@ -272,17 +361,28 @@ function openDoor() {
         status.style.color = "#ff4444";
         status.innerHTML = "☢️ <b>GLOBAL RESET ВЫПОЛНЕН!</b> Все твои данные по всему сайту полностью обнулены!";
         playSound("splat");
-
-        
-  
-
-         } else {
+    } else if (input === "KHAN-LOVE") {
+        doorAttempts = 0;
+        localStorage.setItem("doorWrongAttempts", 0);
         secret.style.display = "none";
-        status.style.color = "#ff4444";
-        status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
+        status.style.color = "#F7D652";
+        status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
+        playSound("door");
+    } else {
+        secret.style.display = "none";
+        doorAttempts++;
+        localStorage.setItem("doorWrongAttempts", doorAttempts);
         playSound("fail");
-    }
 
+        if (doorAttempts >= 5) {
+            localStorage.setItem("doorLockUntil", Date.now() + 300000);
+            checkDoorLock();
+        } else {
+            var left = 5 - doorAttempts;
+            status.style.color = "#ff4444";
+            status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Осталось попыток: <b>" + left + "</b> из 5.";
+        }
+    }
 }
 
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
