@@ -108,52 +108,110 @@ function flashSentinel() {
 <script>
 var dc = document.getElementById("dinoGame"), dctx = dc.getContext("2d");
 
-var dy = 140, vy = 0, grav = 0.75, grounded = true;
+var dy = 126, vy = 0, grav = 0.75, grounded = true;
 var obs = [], drone = null, dScore = 0, dFrame = 0, dRun = false, dLoop, flashTimer = 0;
 var dBest = Number(localStorage.getItem("dinoBestRun")) || 0;
 document.getElementById("dBest").innerText = dBest;
 
-// Пиксельная матрица Сентинела (смотрит вправо, 13x12 пикселей)
-// B = тёмный корпус, G = серый металл, Y = жёлтый визор, R = красный огонь вспышки
+// Детализированный Спарки в ковбойской шляпе (18x16 пикселей)
+// H = коричневая шляпа, L = лента шляпы, B = синий металл, C = голубой неон, R = красный глаз/вспышка, W = когти
 var dinoSprite = [
-    "......BBBBBB.",
-    ".....BBBBYYBB",
-    ".....BBBBYYBR",
-    ".....BBBBBBBB",
-    ".....BBBBBBB.",
-    "B...BBBBBB...",
-    "BB.BBBBBBBB..",
-    ".BBBBBBBB.BB.",
-    "..BBBBBBB....",
-    "...BB.BB.....",
-    "...B...B.....",
-    "..BB..BB....."
+    ".........HHHH.....",
+    "........HHHHHH....",
+    ".......LLLLLLLL...",
+    "......HHHHHHHHHH..",
+    ".......BBBBBBBB...",
+    "......BBBBBRRRBB..",
+    "......BBBBBRRRBB..",
+    "......BBBBBBBBBB..",
+    "B......BBBBBBBB...",
+    "BB....BBCCBBBB....",
+    ".BB..BBBCCBBBBWW..",
+    "..BBBBBBBBBBBB....",
+    "...BBBBBBBBBB.....",
+    ".....BBB..BBB.....",
+    ".....BB....BB.....",
+    "....BWW...BWW....."
 ];
 
 function drawPixelSentinel(x, y) {
-    var ps = 4; // размер одного пикселя (4x4 px)
-    var step = (dRun && grounded) ? Math.floor(dFrame / 6) % 2 : 0; // смена лап при беге
+    var ps = 4;
+    var step = (dRun && grounded) ? Math.floor(dFrame / 5) % 2 : 0;
 
     for (var row = 0; row < dinoSprite.length; row++) {
         for (var col = 0; col < dinoSprite[row].length; col++) {
             var ch = dinoSprite[row][col];
             if (ch === ".") continue;
 
-            // Анимация перебора лап в нижних двух рядах
             var offsetY = 0;
-            if (row >= 10) {
-                if (col < 5 && step === 0) offsetY = -4;
-                if (col >= 5 && step === 1) offsetY = -4;
+            if (row >= 13) {
+                if (col < 8 && step === 0) offsetY = -4;
+                if (col >= 8 && step === 1) offsetY = -4;
             }
 
-                       if (ch === "B") dctx.fillStyle = "#1E56A0";      // Насыщенный синий корпус Сентинела
-            else if (ch === "Y") dctx.fillStyle = "#F7D652"; // Неоново-жёлтый глаз-визор
-            else if (ch === "R") dctx.fillStyle = (flashTimer > 0) ? "#ffffff" : "#ff3333"; // Лампа вспышки
-
+            if (ch === "H") dctx.fillStyle = "#6F4E37";      // Ковбойская шляпа
+            else if (ch === "L") dctx.fillStyle = "#F7D652"; // Золотая лента на шляпе
+            else if (ch === "B") dctx.fillStyle = "#1E56A0"; // Синяя броня Сентинела
+            else if (ch === "C") dctx.fillStyle = "#00E5FF"; // Голубые неоновые полосы
+            else if (ch === "W") dctx.fillStyle = "#E0E0E0"; // Стальные когти
+            else if (ch === "R") dctx.fillStyle = (flashTimer > 0) ? "#ffffff" : "#FF2A2A"; // Красный визор
 
             dctx.fillRect(x + col * ps, y + row * ps + offsetY, ps, ps);
         }
     }
+}
+
+// Детализированный ящик JCJenson (32x34 px)
+function drawCrate(x, y) {
+    // Основной корпус
+    dctx.fillStyle = "#2b303a";
+    dctx.fillRect(x, y, 32, 34);
+    // Жёлтая рамка и диагональная распорка
+    dctx.strokeStyle = "#F7D652";
+    dctx.lineWidth = 2;
+    dctx.strokeRect(x + 1, y + 1, 30, 32);
+    dctx.beginPath();
+    dctx.moveTo(x + 3, y + 3); dctx.lineTo(x + 29, y + 31);
+    dctx.stroke();
+    // Полоса безопасности сверху
+    dctx.fillStyle = "#F7D652";
+    dctx.fillRect(x + 2, y + 2, 28, 6);
+    // Металлические заклёпки по углам
+    dctx.fillStyle = "#ffffff";
+    dctx.fillRect(x + 3, y + 3, 2, 2); dctx.fillRect(x + 27, y + 3, 2, 2);
+    dctx.fillRect(x + 3, y + 29, 2, 2); dctx.fillRect(x + 27, y + 29, 2, 2);
+}
+
+// Детализированный Дрон-демонтажник в небе
+function drawDisassemblyDrone(x, y) {
+    var wingFlap = Math.sin(dFrame / 4) * 8;
+    // Серебристые крылья-лезвия
+    dctx.strokeStyle = "#b0bec5";
+    dctx.lineWidth = 3;
+    dctx.beginPath();
+    dctx.moveTo(x + 20, y + 14); dctx.lineTo(x + 38, y - 4 + wingFlap);
+    dctx.moveTo(x + 24, y + 16); dctx.lineTo(x + 42, y + 4 + wingFlap);
+    dctx.stroke();
+
+    // Хвост со жёлтой колбой кислоты
+    dctx.strokeStyle = "#111"; dctx.lineWidth = 2;
+    dctx.beginPath(); dctx.moveTo(x + 28, y + 18); dctx.quadraticCurveTo(x + 45, y + 28, x + 48, y + 14); dctx.stroke();
+    dctx.fillStyle = "#F7D652";
+    dctx.fillRect(x + 45, y + 8, 5, 9);
+
+    // Плащ и тело
+    dctx.fillStyle = "#1c1e26";
+    dctx.fillRect(x + 12, y + 14, 16, 16);
+
+    // Голова и белые волосы
+    dctx.fillStyle = "#e0e0e0";
+    dctx.fillRect(x + 8, y + 2, 20, 12);
+    // Чёрный экран лица и жёлтый глаз X
+    dctx.fillStyle = "#0b0c10";
+    dctx.fillRect(x + 8, y + 6, 14, 8);
+    dctx.fillStyle = "#F7D652";
+    dctx.font = "bold 9px Arial";
+    dctx.fillText("X", x + 10, y + 13);
 }
 document.addEventListener("keydown", function(e) {
     if ((e.code === "Space" || e.key.toLowerCase() === "w" || e.key === "ArrowUp") && dRun) {
@@ -167,7 +225,7 @@ document.addEventListener("keydown", function(e) {
 
 function dinoJump() {
     if (dRun && grounded) {
-        vy = -13;
+        vy = -13.5;
         grounded = false;
     }
 }
@@ -175,7 +233,7 @@ function dinoJump() {
 function dinoFlash() {
     if (!dRun) return;
     flashTimer = 6;
-    if (drone && drone.x > 100 && drone.x < 520) {
+    if (drone && drone.x > 80 && drone.x < 540) {
         drone = null;
         dScore += 5;
     }
@@ -183,33 +241,37 @@ function dinoFlash() {
 
 function startDino() {
     cancelAnimationFrame(dLoop);
-    dy = 142; vy = 0; grounded = true;
+    dy = 126; vy = 0; grounded = true;
     obs = []; drone = null; dScore = 0; dFrame = 0; dRun = true;
     document.getElementById("dScore").innerText = 0;
     dinoLoop();
 }
 
 function drawDinoScene() {
+    // Тёмный коридор лаборатории с неоновыми лампами
     dctx.fillStyle = "#13151d"; dctx.fillRect(0, 0, 600, 190);
+    dctx.fillStyle = "rgba(121, 62, 166, 0.15)";
+    for (var lx = 60; lx < 600; lx += 160) {
+        dctx.fillRect(lx, 10, 40, 6);
+    }
+
+    // Пол
     dctx.fillStyle = "#222634"; dctx.fillRect(0, 190, 600, 30);
     dctx.strokeStyle = "#793EA6"; dctx.lineWidth = 2;
     dctx.beginPath(); dctx.moveTo(0, 190); dctx.lineTo(600, 190); dctx.stroke();
 
-    // Рисуем нашего пиксельного Сентинела с анимацией лап!
-    drawPixelSentinel(50, dy);
+    drawPixelSentinel(45, dy);
 
+    // Отрисовка всех ящиков JCJenson
     for (var i = 0; i < obs.length; i++) {
-        dctx.fillStyle = "#F7D652";
-        dctx.fillRect(obs[i].x, 155, 28, 35);
-        dctx.fillStyle = "#000000"; dctx.font = "bold 9px Arial";
-        dctx.fillText("JCJ", obs[i].x + 5, 176);
+        drawCrate(obs[i].x, obs[i].y);
     }
 
+    // Дрон-демонтажник сверху
     if (drone) {
-        dctx.font = "26px Arial";
-        dctx.fillText("🤖", drone.x, 75);
-        dctx.fillStyle = "#ff4444"; dctx.font = "bold 11px Arial";
-        dctx.fillText("ВСПЫШКА!", drone.x - 10, 48);
+        drawDisassemblyDrone(drone.x, 48);
+        dctx.fillStyle = "#ff4444"; dctx.font = "bold 10px Arial";
+        dctx.fillText("[F] ВСПЫШКА!", drone.x - 5, 36);
     }
 
     if (flashTimer > 0) {
@@ -224,7 +286,7 @@ function dinoLoop() {
     dFrame++;
 
     dy += vy;
-    if (dy >= 142) { dy = 142; vy = 0; grounded = true; }
+    if (dy >= 126) { dy = 126; vy = 0; grounded = true; }
     else { vy += grav; }
 
     if (dFrame % 10 === 0) {
@@ -237,30 +299,43 @@ function dinoLoop() {
         }
     }
 
-    var spd = 5 + Math.min(5, dScore * 0.03);
+    var spd = 5.2 + Math.min(5, dScore * 0.03);
 
-    if (dFrame % Math.max(55, 95 - Math.floor(dScore / 3)) === 0) {
-        obs.push({ x: 600 });
+    // Случайные комбинации ящиков (1 ящик, 2 ящика подряд или высокая стопка из 2 ящиков!)
+    var spawnGap = Math.max(58, 95 - Math.floor(dScore / 3));
+    if (dFrame % spawnGap === 0) {
+        var type = Math.floor(Math.random() * 3);
+        if (type === 0) {
+            obs.push({ x: 600, y: 156 }); // Одиночный ящик
+        } else if (type === 1) {
+            obs.push({ x: 600, y: 156 }); // Два ящика рядом
+            obs.push({ x: 634, y: 156 });
+        } else {
+            obs.push({ x: 600, y: 156 }); // Высокая башня из двух ящиков!
+            obs.push({ x: 600, y: 122 });
+        }
     }
-    if (!drone && dFrame % 220 === 0) {
+
+    if (!drone && dFrame % 210 === 0) {
         drone = { x: 600 };
     }
 
+    // Движение ящиков и точная проверка столкновений
     for (var i = obs.length - 1; i >= 0; i--) {
         obs[i].x -= spd;
-        if (obs[i].x < 94 && obs[i].x + 28 > 56 && dy + 44 > 155) {
+        if (obs[i].x < 102 && obs[i].x + 28 > 58 && dy + 60 > obs[i].y + 4) {
             dRun = false; drawDinoScene();
-            dctx.fillStyle = "rgba(0,0,0,0.8)"; dctx.fillRect(0, 0, 600, 220);
+            dctx.fillStyle = "rgba(0,0,0,0.82)"; dctx.fillRect(0, 0, 600, 220);
             dctx.fillStyle = "#ff4444"; dctx.font = "bold 24px Arial";
-            dctx.fillText("ВРЕЗАЛСЯ В ЯЩИК! Дистанция: " + dScore + " м", 115, 115);
+            dctx.fillText("ВРЕЗАЛСЯ В ГРУЗ JCJENSON! Счёт: " + dScore + " м", 85, 115);
             return;
         }
-        if (obs[i].x < -30) obs.splice(i, 1);
+        if (obs[i].x < -40) obs.splice(i, 1);
     }
 
     if (drone) {
         drone.x -= spd * 1.1;
-        if (drone.x < -30) drone = null;
+        if (drone.x < -50) drone = null;
     }
 
     drawDinoScene();
@@ -269,6 +344,7 @@ function dinoLoop() {
 
 drawDinoScene();
 </script>
+
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
