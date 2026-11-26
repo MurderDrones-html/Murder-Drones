@@ -1,11 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uzi Doorman</title>
 </head>
-<!-- 1. В самом начале страницы замени <body bgcolor="0b0c10"> на это: -->
-<body style="background-color:#0b0c10;">
+<body style="background-color:#0b0c10; margin:0; padding:10px; transition: background-color 0.15s;">
 
 <div align="center">
 
@@ -47,30 +47,30 @@
         </p>
     </a>
 </td>
-
-<!-- 2. В верхней панели закрой кавычку в ссылке Discord (иначе ломается код ниже): -->
 <td align="right">
-    <a href="https://discord.gg">
-        <p style="font-size:15px;color:#793EA6;font-family:arial;">
+    <a href="https://discord.gg/2C7ZbDQMjx" style="text-decoration:none;">
+        <p style="font-size:15px;color:#793EA6;font-family:arial;margin:0;">
             <b>НАШ DISCORD</b>
         </p>
     </a>
 </td>
-
+</tr>
+</table>
 
 <hr>
 
-<h1 style="font-size:60px;color:#39FF14;font-family:arial;">
+<h1 style="font-size:60px;color:#793EA6;font-family:arial;">
     Uzi Doorman
 </h1>
 
 <img src="uzii.png" width="320">
 <br><br>
 
-<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="#151824">
+<!-- ОСНОВНОЙ БЛОК ИНФОРМАЦИИ -->
+<table id="infoBox" width="850" border="1" cellpadding="20" cellspacing="0" style="background-color:#151824; border-color:#793EA6;">
 <tr>
 <td>
-    <p style="font-size:16px;color:#0b0c10;background-color:#39FF14;font-family:arial;padding:4px;">
+    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:4px;">
         <b>&nbsp;Основная информация&nbsp;</b>
     </p>
     <p style="font-size:14px;color:#ffffff;font-family:arial;">
@@ -81,7 +81,7 @@
 
     <hr>
 
-    <p style="font-size:16px;color:#0b0c10;background-color:#39FF14;font-family:arial;padding:4px;">
+    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:4px;">
         <b>&nbsp;Отношения с персонажами&nbsp;</b>
     </p>
     <p style="font-size:14px;color:#ffffff;font-family:arial;">
@@ -91,7 +91,7 @@
 
     <hr>
 
-    <p style="font-size:16px;color:#0b0c10;background-color:#39FF14;font-family:arial;padding:4px;">
+    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:4px;">
         <b>&nbsp;Сюжет и события&nbsp;</b>
     </p>
     <p style="font-size:14px;color:#ffffff;font-family:arial;">
@@ -101,7 +101,7 @@
 
     <hr>
 
-    <p style="font-size:16px;color:#0b0c10;background-color:#39FF14;font-family:arial;padding:4px;">
+    <p style="font-size:16px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:4px;">
         <b>&nbsp;Наш канал по дронам&nbsp;</b>
     </p>
     <p style="font-size:14px;color:#ffffff;font-family:arial;">
@@ -114,28 +114,28 @@
 <br>
 
 <!-- ПАСХАЛКА УЗИ: РЕЛЬСОТРОН -->
-<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="#181a24">
+<table id="railBox" width="850" border="1" cellpadding="20" cellspacing="0" style="background-color:#181a24; border-color:#793EA6;">
 <tr>
 <td align="center">
-    <p style="font-size:18px;color:#0b0c10;background-color:#39FF14;font-family:arial;padding:8px;">
+    <p style="font-size:18px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
         <b>&nbsp;⚡ ПУШКА УЗИ (РЕЛЬСОТРОН)&nbsp;</b>
     </p>
     <p id="railText" style="font-size:16px;color:#ffffff;font-family:arial;">
         Заряд: <b>0%</b> (Готов к зарядке)
     </p>
-    <button type="button" onclick="chargeRailgun()" style="background-color:#39FF14;color:#0b0c10;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+    <button type="button" onclick="chargeRailgun()" style="background-color:#793EA6;color:#F7D652;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
         Зарядить рельсотрон ⚡
     </button>
 </td>
 </tr>
 </table>
 
-
 <script>
 var uziSound = new Audio("uzi.mp3");
 var charge = Number(localStorage.getItem("uziCharge")) || 0;
 var totalShots = Number(localStorage.getItem("uziTotalShots")) || 0;
 var txt = document.getElementById("railText");
+var railBox = document.getElementById("railBox");
 
 if (charge === 100) {
     txt.style.color = "#00ff88";
@@ -156,7 +156,6 @@ function chargeRailgun() {
         txt.style.color = "#00ff88";
         txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми ещё раз для выстрела! <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
     } else {
-        // ИГРАЕМ ЗВУК ВЫСТРЕЛА РЕЛЬСОТРОНА!
         try { uziSound.currentTime = 0; uziSound.play(); } catch (e) {}
 
         charge = 0;
@@ -164,10 +163,16 @@ function chargeRailgun() {
         localStorage.setItem("uziCharge", 0);
         localStorage.setItem("uziTotalShots", totalShots);
 
-               // Вспышка неоново-зелёным цветом (#39FF14) на 0.4 секунды!
+        // Вспышка неоново-зелёным цветом (#39FF14)!
         document.body.style.backgroundColor = "#39FF14";
-        setTimeout(function() { document.body.style.backgroundColor = "#0b0c10"; }, 1200);
-;
+        railBox.style.backgroundColor = "#1f4d14";
+        railBox.style.borderColor = "#39FF14";
+
+        setTimeout(function() { 
+            document.body.style.backgroundColor = "#0b0c10"; 
+            railBox.style.backgroundColor = "#181a24";
+            railBox.style.borderColor = "#793EA6";
+        }, 800);
 
         txt.style.color = "#F7D652";
         txt.innerHTML = "💥 <b>БА-БАХ!! BITE ME! (УКУСИ МЕНЯ!)</b> — Всего выстрелов: <b>" + totalShots + "</b>";
@@ -175,10 +180,9 @@ function chargeRailgun() {
 }
 </script>
 
-
 <br><br>
-<div align="left">
-    <a href="index.html">
+<div align="left" style="width:850px;">
+    <a href="index.html" style="text-decoration:none;">
         <p style="font-size:20px;color:#F7D652;font-family:arial;">
             <b>HOME</b>
         </p>
