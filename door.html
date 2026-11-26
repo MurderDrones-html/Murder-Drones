@@ -195,9 +195,10 @@ var sounds = {
     door: new Audio("door.mp3"),
     catch: new Audio("mango2.mp3"),
     splat: new Audio("mango.mp3"),
-    win: new Audio("win.mp3")
+    win: new Audio("win.mp3"),
     fail: new Audio("fail.mp3")
 };
+
 
 function playSound(type) {
     try {
@@ -275,12 +276,13 @@ function openDoor() {
         
   
 
-      } else {
+         } else {
         secret.style.display = "none";
         status.style.color = "#ff4444";
         status.innerHTML = "❌ ДОСТУП ЗАПРЕЩЁН! Неверный пароль. Хан смотрит на тебя с подозрением.";
-        playSound("fail"); // Теперь играет звук ошибки!
+        playSound("fail");
     }
+
 }
 
 var c = document.getElementById("manorGame"), ctx = c.getContext("2d");
