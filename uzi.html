@@ -209,7 +209,6 @@ function runTimer() {
     timerInterval = setInterval(tick, 100);
 }
 
-// Проверяем при загрузке страницы, не висит ли активный таймер
 if (cooldownEnd > Date.now()) {
     runTimer();
 } else {
@@ -223,12 +222,11 @@ function chargeRailgun() {
 
     if (charge < 100) {
         localStorage.setItem("uziCharge", charge);
-        startCooldown(3500, "charge"); // 3.5 секунды между кликами зарядки
+        startCooldown(3500, "charge");
     } else if (charge === 100) {
         localStorage.setItem("uziCharge", charge);
-        startCooldown(3500, "charge"); // 3.5 секунды стабилизации перед выстрелом
+        startCooldown(3500, "charge");
     } else {
-        // ВЫСТРЕЛ!
         try { uziSound.currentTime = 0; uziSound.play(); } catch (e) {}
 
         charge = 0;
@@ -236,22 +234,23 @@ function chargeRailgun() {
         localStorage.setItem("uziCharge", 0);
         localStorage.setItem("uziTotalShots", totalShots);
 
-        // Вспышка неоново-зелёным цветом (#39FF14)!
-        document.body.style.backgroundColor = "#39FF14";
-        railBox.style.backgroundColor = "#1f4d14";
-        railBox.style.borderColor = "#39FF14";
-
-        setTimeout(function() { 
-            document.body.style.backgroundColor = "#0b0c10"; 
-            railBox.style.backgroundColor = "#181a24";
-            railBox.style.borderColor = "#793EA6";
-        }, 800);
-
-        // Запускаем 30-секундный перегрев
         startCooldown(30000, "overheat");
+
+        setTimeout(function() {
+            document.body.style.backgroundColor = "#39FF14";
+            railBox.style.backgroundColor = "#1f4d14";
+            railBox.style.borderColor = "#39FF14";
+
+            setTimeout(function() { 
+                document.body.style.backgroundColor = "#0b0c10"; 
+                railBox.style.backgroundColor = "#181a24";
+                railBox.style.borderColor = "#793EA6";
+            }, 800);
+        }, 1000);
     }
 }
 </script>
+
 
 
 <br><br>
