@@ -138,7 +138,7 @@
 </table>
 
 <script>
-// Загружаем количество поглаживаний из памяти браузера
+var nSound = new Audio("n.mp3");
 var dogPets = Number(localStorage.getItem("nDogPets")) || 0;
 var nTxt = document.getElementById("nDogText");
 
@@ -150,8 +150,11 @@ if (dogPets >= 15) {
 }
 
 function petDog() {
+    // ИГРАЕМ ЗВУК РЕТРИВЕРА!
+    try { nSound.currentTime = 0; nSound.play(); } catch (e) {}
+
     var dogPhrases = [
-        "Эн: «Ух ты, смотри какой мягкий! Золотистые ретриверы — лучшие!»",
+        "Эн: «Ух ты, смотри какой мягкий! Золотистые ретриверов — лучшие!»",
         "Эн: «Знаешь, у них даже есть специальные лапки для плавания!»",
         "Эн: «Я даже нарисовал одного в своём блокноте! :D»",
         "Эн: «Узи говорит, что я слишком много про них болтаю... но они же милые!»",
@@ -174,6 +177,7 @@ function petDog() {
     }
 }
 </script>
+
 
 
 <br><br>
