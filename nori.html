@@ -90,7 +90,6 @@ var pulseSide = null, pulseTimer = 0;
 var nBest = Number(localStorage.getItem("noriBestScore")) || 0;
 document.getElementById("noriBest").innerText = nBest;
 
-// Управление с клавиатуры (A/D или стрелки влево/вправо)
 document.addEventListener("keydown", function(e) {
     if (!nRun) return;
     var k = e.key.toLowerCase();
@@ -98,7 +97,6 @@ document.addEventListener("keydown", function(e) {
     if (k === "d" || k === "в" || e.key === "ArrowRight") noriAttack("right");
 });
 
-// Управление кликом прямо по левой или правой половине экрана игры
 nc.addEventListener("mousedown", function(e) {
     if (!nRun) return;
     var rect = nc.getBoundingClientRect();
@@ -118,12 +116,11 @@ function startNoriGame() {
 function noriAttack(side) {
     if (!nRun) return;
     pulseSide = side;
-    pulseTimer = 8;
+    pulseTimer = 10;
 
-    // Уничтожаем ближайший вирус в зоне удара (от 110 до 270 px от центра)
     for (var i = nEnemies.length - 1; i >= 0; i--) {
         var en = nEnemies[i];
-        if (en.side === side && Math.abs(en.x - 300) < 185) {
+        if (en.side === side && Math.abs(en.x - 300) < 190) {
             nEnemies.splice(i, 1);
             nScore++;
             document.getElementById("noriScore").innerText = nScore;
@@ -137,56 +134,155 @@ function noriAttack(side) {
     }
 }
 
-function drawNoriCore() {
-    // Тёмная пещера лаборатории
-    nctx.fillStyle = "#0e1017"; nctx.fillRect(0, 0, 600, 200);
-    nctx.fillStyle = "#1c1f2b"; nctx.fillRect(0, 200, 600, 40);
+// Отрисовка сингулярности [NULL] при ударе
+function drawNullSingularity(x, y, progress) {
+    nctx.save();
+    var radius = 26 * progress;
 
-    // Зона досягаемости фиолетового импульса Нори
-    nctx.strokeStyle = "rgba(121, 62, 166, 0.35)";
-    nctx.lineWidth = 2;
-    nctx.strokeRect(120, 145, 360, 55);
+    // Внешнее фиолетово-неоновое свечение
+    var glow = nctx.createRadialGradient(x, y, radius * 0.2, x, y, radius * 2.2);
+    glow.addColorStop(0, "rgba(187, 107, 217, 0.95)");
+    glow.addColorStop(0.5, "rgba(121, 62, 166, 0.65)");
+    glow.addColorStop(1, "rgba(121, 62, 166, 0)");
+    nctx.fillStyle = glow;
+    nctx.beginPath(); nctx.arc(x, y, radius * 2.2, 0, Math.PI * 2); nctx.fill();
 
-    // Вспышка фиолетового щита Solver при атаке
-    if (pulseTimer > 0) {
-        nctx.fillStyle = "rgba(187, 107, 217, 0.45)";
-        if (pulseSide === "left") nctx.fillRect(120, 145, 160, 55);
-        if (pulseSide === "right") nctx.fillRect(320, 145, 160, 55);
-        pulseTimer--;
-    }
-
-    // Рисуем Ядро-краба Нори по центру (x = 300)
-    // Клешни/лапки краба
-    nctx.strokeStyle = "#bb6bd9"; nctx.lineWidth = 3;
+    // Кольцо-линза аккреционного диска
+    nctx.strokeStyle = "#e0aaff";
+    nctx.lineWidth = 2.5;
     nctx.beginPath();
-    nctx.moveTo(280, 185); nctx.lineTo(265, 200);
-    nctx.moveTo(320, 185); nctx.lineTo(335, 200);
-    nctx.moveTo(276, 175); nctx.lineTo(260, 188);
-    nctx.moveTo(324, 175); nctx.lineTo(340, 188);
+    nctx.ellipse(x, y, radius * 1.8, radius * 0.45, -0.25, 0, Math.PI * 2);
     nctx.stroke();
 
-    // Фиолетовая сфера ядра
-    nctx.fillStyle = "#793EA6";
-    nctx.beginPath(); nctx.arc(300, 175, 22, 0, Math.PI * 2); nctx.fill();
-    nctx.strokeStyle = "#F7D652"; nctx.lineWidth = 2; nctx.stroke();
-
-    // Глаз Нори (смотрит в сторону последнего удара)
-    var lookOffset = (pulseSide === "left") ? -5 : (pulseSide === "right" ? 5 : 0);
-    nctx.fillStyle = "#ff66cc";
-    nctx.beginPath(); nctx.arc(300 + lookOffset, 173, 7, 0, Math.PI * 2); nctx.fill();
+    // Абсолютно чёрная сфера [NULL]
     nctx.fillStyle = "#000000";
-    nctx.beginPath(); nctx.arc(300 + lookOffset, 173, 3, 0, Math.PI * 2); nctx.fill();
+    nctx.beginPath(); nctx.arc(x, y, radius, 0, Math.PI * 2); nctx.fill();
+    nctx.strokeStyle = "#ffffff";
+    nctx.lineWidth = 1.5;
+    nctx.stroke();
+
+    // Надпись [NULL] внутри чёрной дыры
+    if (progress > 0.4) {
+        nctx.fillStyle = "#e0aaff";
+        nctx.font = "bold 10px monospace";
+        nctx.textAlign = "center";
+        nctx.fillText("[NULL]", x, y + 3);
+    }
+    nctx.restore();
+}
+function drawNoriCore() {
+    // Глубокий фон шахты с подсветкой
+    var bg = nctx.createLinearGradient(0, 0, 0, 200);
+    bg.addColorStop(0, "#090a0f");
+    bg.addColorStop(1, "#161224");
+    nctx.fillStyle = bg;
+    nctx.fillRect(0, 0, 600, 200);
+
+    // Пол шахты
+    nctx.fillStyle = "#1c1f2b";
+    nctx.fillRect(0, 200, 600, 40);
+    nctx.strokeStyle = "#793EA6";
+    nctx.lineWidth = 2;
+    nctx.beginPath(); nctx.moveTo(0, 200); nctx.lineTo(600, 200); nctx.stroke();
+
+    // Зоны атаки
+    nctx.strokeStyle = "rgba(187, 107, 217, 0.25)";
+    nctx.lineWidth = 1.5;
+    nctx.strokeRect(115, 130, 370, 70);
+
+    var breathe = Math.sin(nFrame / 12) * 2;
+    var cy = 168 + breathe;
+
+    // 1. Задние суставчатые лапки-клешни краба
+    nctx.strokeStyle = "#4a236b";
+    nctx.lineWidth = 5;
+    nctx.lineCap = "round";
+    nctx.beginPath();
+    nctx.moveTo(276, cy + 8); nctx.lineTo(255, cy + 2); nctx.lineTo(248, 200);
+    nctx.moveTo(324, cy + 8); nctx.lineTo(345, cy + 2); nctx.lineTo(352, 200);
+    nctx.stroke();
+
+    // 2. Передние мощные клешни с металлическим бликом
+    nctx.strokeStyle = "#9b51e0";
+    nctx.lineWidth = 6;
+    nctx.beginPath();
+    nctx.moveTo(278, cy + 12); nctx.lineTo(262, cy + 16); nctx.lineTo(258, 200);
+    nctx.moveTo(322, cy + 12); nctx.lineTo(338, cy + 16); nctx.lineTo(342, 200);
+    nctx.stroke();
+
+    // Светящиеся кончики когтей
+    nctx.fillStyle = "#e0aaff";
+    nctx.beginPath(); nctx.arc(258, 198, 3, 0, Math.PI * 2); nctx.fill();
+    nctx.beginPath(); nctx.arc(342, 198, 3, 0, Math.PI * 2); nctx.fill();
+
+    // 3. Внешняя энергетическая аура ядра Нори
+    var aura = nctx.createRadialGradient(300, cy, 15, 300, cy, 42);
+    aura.addColorStop(0, "rgba(187, 107, 217, 0.7)");
+    aura.addColorStop(1, "rgba(121, 62, 166, 0)");
+    nctx.fillStyle = aura;
+    nctx.beginPath(); nctx.arc(300, cy, 42, 0, Math.PI * 2); nctx.fill();
+
+    // 4. Объёмная био-механическая сфера ядра (3D-градиент)
+    var coreGrad = nctx.createRadialGradient(292, cy - 8, 4, 300, cy, 26);
+    coreGrad.addColorStop(0, "#d896ff");
+    coreGrad.addColorStop(0.5, "#793EA6");
+    coreGrad.addColorStop(1, "#2b1042");
+    nctx.fillStyle = coreGrad;
+    nctx.beginPath(); nctx.arc(300, cy, 26, 0, Math.PI * 2); nctx.fill();
+
+    // Броневые пластины и ободок ядра
+    nctx.strokeStyle = "#e0aaff";
+    nctx.lineWidth = 2;
+    nctx.stroke();
+
+    // 5. Детализированный глаз Сверхвычислителя (с радужкой, зрачком и бликом)
+    var lookX = (pulseSide === "left" && pulseTimer > 0) ? -6 : (pulseSide === "right" && pulseTimer > 0 ? 6 : 0);
+    // Чёрный визор
+    nctx.fillStyle = "#09050d";
+    nctx.beginPath(); nctx.ellipse(300, cy - 1, 17, 12, 0, 0, Math.PI * 2); nctx.fill();
+
+    // Светящаяся радужка глаза Нори
+    var eyeGrad = nctx.createRadialGradient(300 + lookX, cy - 1, 2, 300 + lookX, cy - 1, 9);
+    eyeGrad.addColorStop(0, "#ffffff");
+    eyeGrad.addColorStop(0.4, "#ff77ff");
+    eyeGrad.addColorStop(1, "#9b51e0");
+    nctx.fillStyle = eyeGrad;
+    nctx.beginPath(); nctx.arc(300 + lookX, cy - 1, 8.5, 0, Math.PI * 2); nctx.fill();
+
+    // Зрачок и стеклянный блик
+    nctx.fillStyle = "#1a002b";
+    nctx.beginPath(); nctx.ellipse(300 + lookX, cy - 1, 2.5, 5.5, 0, 0, Math.PI * 2); nctx.fill();
+    nctx.fillStyle = "#ffffff";
+    nctx.beginPath(); nctx.arc(297 + lookX, cy - 4, 2, 0, Math.PI * 2); nctx.fill();
+
+    // 6. Если нажата атака — рисуем чёрную дыру [NULL] в месте удара!
+    if (pulseTimer > 0) {
+        var nullX = (pulseSide === "left") ? 195 : 405;
+        drawNullSingularity(nullX, 168, pulseTimer / 10);
+        pulseTimer--;
+    }
 }
 
 function drawEnemies() {
     for (var i = 0; i < nEnemies.length; i++) {
         var en = nEnemies[i];
-        // Красный заражённый дрон-паук Син
-        nctx.fillStyle = "#ff3333";
-        nctx.beginPath(); nctx.arc(en.x, 182, 12, 0, Math.PI * 2); nctx.fill();
+        // Детализированный заражённый краб-вирус Син
+        nctx.strokeStyle = "#990000"; nctx.lineWidth = 3;
+        nctx.beginPath();
+        nctx.moveTo(en.x - 10, 185); nctx.lineTo(en.x - 15, 200);
+        nctx.moveTo(en.x + 10, 185); nctx.lineTo(en.x + 15, 200);
+        nctx.stroke();
+
+        var eGrad = nctx.createRadialGradient(en.x - 3, 178, 2, en.x, 182, 13);
+        eGrad.addColorStop(0, "#ff6666");
+        eGrad.addColorStop(1, "#660000");
+        nctx.fillStyle = eGrad;
+        nctx.beginPath(); nctx.arc(en.x, 182, 13, 0, Math.PI * 2); nctx.fill();
+
+        // Жёлтые глаза-крестики вируса
         nctx.fillStyle = "#F7D652";
-        nctx.fillRect(en.x - 5, 179, 4, 4);
-        nctx.fillRect(en.x + 1, 179, 4, 4);
+        nctx.fillRect(en.x - 6, 179, 4, 4);
+        nctx.fillRect(en.x + 2, 179, 4, 4);
     }
 }
 
@@ -194,7 +290,6 @@ function noriGameLoop() {
     if (!nRun) return;
     nFrame++;
 
-    // Появление вирусов слева или справа
     var spawnRate = Math.max(28, 70 - Math.floor(nScore / 2));
     if (nFrame % spawnRate === 0) {
         var isLeft = Math.random() < 0.5;
@@ -210,8 +305,7 @@ function noriGameLoop() {
         var en = nEnemies[i];
         en.x += (en.side === "left") ? spd : -spd;
 
-        // Если вирус дошёл до ядра Нори
-        if (Math.abs(en.x - 300) < 25) {
+        if (Math.abs(en.x - 300) < 28) {
             nEnemies.splice(i, 1);
             nHp--;
             document.getElementById("noriHp").innerText = nHp;
@@ -219,9 +313,11 @@ function noriGameLoop() {
             if (nHp <= 0) {
                 nRun = false;
                 drawNoriCore();
-                nctx.fillStyle = "rgba(0,0,0,0.82)"; nctx.fillRect(0, 0, 600, 240);
+                nctx.fillStyle = "rgba(0,0,0,0.84)"; nctx.fillRect(0, 0, 600, 240);
                 nctx.fillStyle = "#ff4444"; nctx.font = "bold 24px Arial";
-                nctx.fillText("ЯДРО ЗАРАЖЕНО! Отражено атак: " + nScore, 115, 125);
+                nctx.textAlign = "center";
+                nctx.fillText("ЯДРО ЗАРАЖЕНО! Отражено атак: " + nScore, 300, 125);
+                nctx.textAlign = "left";
                 return;
             }
         }
