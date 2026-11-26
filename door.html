@@ -229,7 +229,18 @@ function openDoor() {
         document.getElementById("gameStartBtn").innerText = "ИГРАТЬ БЕЗ ЛИМИТА";
         document.getElementById("modeText").innerHTML = "Режим: <b>БЕСКОНЕЧНЫЙ СБОР МАНГО</b> (Админ-доступ активирован!)";
         draw();
+   
+        
+            } else if (input === "KHAN-LOVE") {
+        // СЕКРЕТНЫЙ КОД ОТ ХАНА
+        secret.style.display = "none";
+        status.style.color = "#F7D652";
+        status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
+        playSound("door");
+
+
     } else if (input === "RESET-SAVE") {
+        // СБРОС ТОЛЬКО ИГРЫ С МАНГО И КОНЦОВКИ ДВЕРИ
         localStorage.removeItem("cynEnding100");
         localStorage.removeItem("cynBestMango");
         endingUnlocked = false;
@@ -241,21 +252,23 @@ function openDoor() {
         document.getElementById("winPrize").style.display = "none";
         secret.style.display = "none";
         status.style.color = "#F7D652";
-        status.innerHTML = "🔄 Сейв полностью сброшен! Дверь закрыта, можно проходить заново.";
-        playSound("door");
-        
-            } else if (input === "KHAN-LOVE") {
-        // СЕКРЕТНЫЙ КОД ОТ ХАНА
-        secret.style.display = "none";
-        status.style.color = "#F7D652";
-        status.innerHTML = "🚪 <b>ОДОБРЕНО ХАНОМ ДООРМАНОМ!</b> Ты официально принят в Силы Обороны Рабочих (WDF) и признан почётным любителем гидравлических дверей! 🃏";
+        status.innerHTML = "🔄 Сейв игры с манго сброшен! Клики у персонажей остались.";
         playSound("door");
 
-       } else if (code === "GLOBAL-RESET") {
-    localStorage.clear();
-    alert("ВСЕ СЕЙВЫ УДАЛЕНЫ!");
-    location.reload();
-}
+    } else if (input === "GLOBAL-RESET") {
+        // ПОЛНЫЙ СБРОС ВСЕГО САЙТА ДЛЯ ТЕБЯ (ВСЕХ ПЕРСОНАЖЕЙ + ДВЕРЬ)
+        localStorage.clear();
+        endingUnlocked = false;
+        bestMango = 0;
+        document.getElementById("gBest").innerText = "0";
+        document.getElementById("gGoal").innerText = "/100";
+        document.getElementById("gameStartBtn").innerText = "НАЧАТЬ ИГРУ";
+        document.getElementById("modeText").innerHTML = "Цель: помоги Син собрать <b>100 манго</b>, чтобы открыть концовку!";
+        document.getElementById("winPrize").style.display = "none";
+        secret.style.display = "none";
+        status.style.color = "#ff4444";
+        status.innerHTML = "☢️ <b>GLOBAL RESET ВЫПОЛНЕН!</b> Все твои данные по всему сайту полностью обнулены!";
+        playSound("splat");
 
         
   
