@@ -242,36 +242,43 @@ function dinoJump() {
 var flashCooldown = false;
 
 function dinoFlash() {
-    if (!dRun || flashCooldown) return; // Не даём спамить вспышкой!
+    if (!dRun || flashCooldown) return;
 
     flashCooldown = true;
     flashTimer = 6;
-
-    // Визуально отключаем кнопку на время перезарядки
-    var fBtn = document.getElementById("flashGameBtn");
-    if (fBtn) {
-        fBtn.disabled = true;
-        fBtn.style.backgroundColor = "#555555";
-        fBtn.style.color = "#cccccc";
-        fBtn.innerHTML = "⏳ ПЕРЕЗАРЯДКА (3 сек.)";
-    }
 
     if (drone && drone.x > 80 && drone.x < 540) {
         drone = null;
         dScore += 5;
     }
 
-    // Возвращаем кнопку через 3 секунды (3000 мс)
-    setTimeout(function() {
-        flashCooldown = false;
-        if (fBtn) {
-            fBtn.disabled = false;
-            fBtn.style.backgroundColor = "#ffffff";
-            fBtn.style.color = "#000000";
-            fBtn.innerHTML = "⚡ ВСПЫШКА ПО ДРОНУ (F)";
+    var fBtn = document.getElementById("flashGameBtn");
+    var sec = 3;
+
+    if (fBtn) {
+        fBtn.disabled = true;
+        fBtn.style.backgroundColor = "#555555";
+        fBtn.style.color = "#cccccc";
+        fBtn.innerHTML = "⏳ ПЕРЕЗАРЯДКА (" + sec + " сек.)";
+    }
+
+    var cdTimer = setInterval(function() {
+        sec--;
+        if (sec > 0) {
+            if (fBtn) fBtn.innerHTML = "⏳ ПЕРЕЗАРЯДКА (" + sec + " сек.)";
+        } else {
+            clearInterval(cdTimer);
+            flashCooldown = false;
+            if (fBtn) {
+                fBtn.disabled = false;
+                fBtn.style.backgroundColor = "#ffffff";
+                fBtn.style.color = "#000000";
+                fBtn.innerHTML = "⚡ ВСПЫШКА ПО ДРОНУ (F)";
+            }
         }
-    }, 3000);
+    }, 1000);
 }
+
 
 
 function startDino() {
