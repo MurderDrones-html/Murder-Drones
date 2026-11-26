@@ -43,6 +43,198 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- МИНИ-ИГРА НОРИ: ЗАЩИТА ЯДРА -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+
+    <p style="font-size:20px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;">
+        <b>&nbsp;🦀 ЗАЩИТА ЯДРА НОРИ (SOLVER DEFENSE)&nbsp;</b>
+    </p>
+
+    <p style="font-size:16px;color:#F7D652;font-family:arial;">
+        Отражено атак: <b id="noriScore">0</b> &nbsp;|&nbsp; Рекорд: <b id="noriBest">0</b> &nbsp;|&nbsp;
+        <span style="color:#ff5555;">Прочность ядра: <b id="noriHp">3</b> / 3</span>
+    </p>
+
+    <canvas id="noriCanvas" width="600" height="240" style="background-color:#0b0c10;border:3px solid #793EA6;cursor:pointer;"></canvas>
+    <br><br>
+
+    <!-- КНОПКИ УПРАВЛЕНИЯ -->
+    <button type="button" onclick="noriAttack('left')" style="padding:12px 24px;background:#793EA6;color:#F7D652;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
+        ⬅️ ИМПУЛЬС СЛЕВА (A / ←)
+    </button>
+    &nbsp;&nbsp;
+    <button type="button" onclick="noriAttack('right')" style="padding:12px 24px;background:#793EA6;color:#F7D652;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
+        ИМПУЛЬС СПРАВА (D / →) ➡️
+    </button>
+    <br><br>
+
+    <button type="button" onclick="startNoriGame()" style="padding:10px 25px;background:#F7D652;color:#000000;font-weight:bold;border:none;cursor:pointer;font-size:15px;">
+        НАЧАТЬ ОБОРОНУ
+    </button>
+
+    <p style="font-size:13px;color:#aaaaaa;font-family:arial;margin-top:10px;">
+        Отбивай красные вирусы Син слева и справа, пока они не добрались до ядра Нори!
+    </p>
+
+</td>
+</tr>
+</table>
+<script>
+var nc = document.getElementById("noriCanvas"), nctx = nc.getContext("2d");
+var nEnemies = [], nScore = 0, nHp = 3, nRun = false, nFrame = 0, nLoop;
+var pulseSide = null, pulseTimer = 0;
+var nBest = Number(localStorage.getItem("noriBestScore")) || 0;
+document.getElementById("noriBest").innerText = nBest;
+
+// Управление с клавиатуры (A/D или стрелки влево/вправо)
+document.addEventListener("keydown", function(e) {
+    if (!nRun) return;
+    var k = e.key.toLowerCase();
+    if (k === "a" || k === "ф" || e.key === "ArrowLeft") noriAttack("left");
+    if (k === "d" || k === "в" || e.key === "ArrowRight") noriAttack("right");
+});
+
+// Управление кликом прямо по левой или правой половине экрана игры
+nc.addEventListener("mousedown", function(e) {
+    if (!nRun) return;
+    var rect = nc.getBoundingClientRect();
+    var clickX = e.clientX - rect.left;
+    noriAttack(clickX < 300 ? "left" : "right");
+});
+
+function startNoriGame() {
+    cancelAnimationFrame(nLoop);
+    nEnemies = []; nScore = 0; nHp = 3; nFrame = 0; nRun = true;
+    pulseSide = null; pulseTimer = 0;
+    document.getElementById("noriScore").innerText = 0;
+    document.getElementById("noriHp").innerText = 3;
+    noriGameLoop();
+}
+
+function noriAttack(side) {
+    if (!nRun) return;
+    pulseSide = side;
+    pulseTimer = 8;
+
+    // Уничтожаем ближайший вирус в зоне удара (от 110 до 270 px от центра)
+    for (var i = nEnemies.length - 1; i >= 0; i--) {
+        var en = nEnemies[i];
+        if (en.side === side && Math.abs(en.x - 300) < 185) {
+            nEnemies.splice(i, 1);
+            nScore++;
+            document.getElementById("noriScore").innerText = nScore;
+            if (nScore > nBest) {
+                nBest = nScore;
+                localStorage.setItem("noriBestScore", nBest);
+                document.getElementById("noriBest").innerText = nBest;
+            }
+            break;
+        }
+    }
+}
+
+function drawNoriCore() {
+    // Тёмная пещера лаборатории
+    nctx.fillStyle = "#0e1017"; nctx.fillRect(0, 0, 600, 200);
+    nctx.fillStyle = "#1c1f2b"; nctx.fillRect(0, 200, 600, 40);
+
+    // Зона досягаемости фиолетового импульса Нори
+    nctx.strokeStyle = "rgba(121, 62, 166, 0.35)";
+    nctx.lineWidth = 2;
+    nctx.strokeRect(120, 145, 360, 55);
+
+    // Вспышка фиолетового щита Solver при атаке
+    if (pulseTimer > 0) {
+        nctx.fillStyle = "rgba(187, 107, 217, 0.45)";
+        if (pulseSide === "left") nctx.fillRect(120, 145, 160, 55);
+        if (pulseSide === "right") nctx.fillRect(320, 145, 160, 55);
+        pulseTimer--;
+    }
+
+    // Рисуем Ядро-краба Нори по центру (x = 300)
+    // Клешни/лапки краба
+    nctx.strokeStyle = "#bb6bd9"; nctx.lineWidth = 3;
+    nctx.beginPath();
+    nctx.moveTo(280, 185); nctx.lineTo(265, 200);
+    nctx.moveTo(320, 185); nctx.lineTo(335, 200);
+    nctx.moveTo(276, 175); nctx.lineTo(260, 188);
+    nctx.moveTo(324, 175); nctx.lineTo(340, 188);
+    nctx.stroke();
+
+    // Фиолетовая сфера ядра
+    nctx.fillStyle = "#793EA6";
+    nctx.beginPath(); nctx.arc(300, 175, 22, 0, Math.PI * 2); nctx.fill();
+    nctx.strokeStyle = "#F7D652"; nctx.lineWidth = 2; nctx.stroke();
+
+    // Глаз Нори (смотрит в сторону последнего удара)
+    var lookOffset = (pulseSide === "left") ? -5 : (pulseSide === "right" ? 5 : 0);
+    nctx.fillStyle = "#ff66cc";
+    nctx.beginPath(); nctx.arc(300 + lookOffset, 173, 7, 0, Math.PI * 2); nctx.fill();
+    nctx.fillStyle = "#000000";
+    nctx.beginPath(); nctx.arc(300 + lookOffset, 173, 3, 0, Math.PI * 2); nctx.fill();
+}
+
+function drawEnemies() {
+    for (var i = 0; i < nEnemies.length; i++) {
+        var en = nEnemies[i];
+        // Красный заражённый дрон-паук Син
+        nctx.fillStyle = "#ff3333";
+        nctx.beginPath(); nctx.arc(en.x, 182, 12, 0, Math.PI * 2); nctx.fill();
+        nctx.fillStyle = "#F7D652";
+        nctx.fillRect(en.x - 5, 179, 4, 4);
+        nctx.fillRect(en.x + 1, 179, 4, 4);
+    }
+}
+
+function noriGameLoop() {
+    if (!nRun) return;
+    nFrame++;
+
+    // Появление вирусов слева или справа
+    var spawnRate = Math.max(28, 70 - Math.floor(nScore / 2));
+    if (nFrame % spawnRate === 0) {
+        var isLeft = Math.random() < 0.5;
+        nEnemies.push({
+            side: isLeft ? "left" : "right",
+            x: isLeft ? 10 : 590
+        });
+    }
+
+    var spd = 2.6 + Math.min(3.8, nScore * 0.05);
+
+    for (var i = nEnemies.length - 1; i >= 0; i--) {
+        var en = nEnemies[i];
+        en.x += (en.side === "left") ? spd : -spd;
+
+        // Если вирус дошёл до ядра Нори
+        if (Math.abs(en.x - 300) < 25) {
+            nEnemies.splice(i, 1);
+            nHp--;
+            document.getElementById("noriHp").innerText = nHp;
+
+            if (nHp <= 0) {
+                nRun = false;
+                drawNoriCore();
+                nctx.fillStyle = "rgba(0,0,0,0.82)"; nctx.fillRect(0, 0, 600, 240);
+                nctx.fillStyle = "#ff4444"; nctx.font = "bold 24px Arial";
+                nctx.fillText("ЯДРО ЗАРАЖЕНО! Отражено атак: " + nScore, 115, 125);
+                return;
+            }
+        }
+    }
+
+    drawNoriCore();
+    drawEnemies();
+    nLoop = requestAnimationFrame(noriGameLoop);
+}
+
+drawNoriCore();
+</script>
+
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
