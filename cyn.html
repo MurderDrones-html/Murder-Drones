@@ -243,7 +243,7 @@ function checkSolver() {
         attempts = attempts - 1;
         localStorage.setItem("cynAttempts", attempts);
 
-        if (percent >= 95) {
+        if (percent >= 90) {
             // Победа! Сбрасываем счётчик попыток для будущих игр
             localStorage.removeItem("cynAttempts");
             box.style.color = "#ff4444";
