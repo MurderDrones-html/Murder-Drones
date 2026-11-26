@@ -88,9 +88,11 @@ function flashSentinel() {
         ⬆️ ПРЫЖОК (Пробел / W)
     </button>
     &nbsp;&nbsp;
-    <button type="button" onclick="dinoFlash()" style="padding:12px 24px;background:#ffffff;color:#000000;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
+   
+    <button id="flashGameBtn" type="button" onclick="dinoFlash()" style="padding:12px 24px;background:#ffffff;color:#000000;font-weight:bold;border:2px solid #F7D652;cursor:pointer;font-size:15px;">
         ⚡ ВСПЫШКА ПО ДРОНУ (F)
     </button>
+
     <br><br>
 
     <button type="button" onclick="startDino()" style="padding:10px 25px;background:#F7D652;color:#000000;font-weight:bold;border:none;cursor:pointer;font-size:15px;">
@@ -237,14 +239,40 @@ function dinoJump() {
     }
 }
 
+var flashCooldown = false;
+
 function dinoFlash() {
-    if (!dRun) return;
+    if (!dRun || flashCooldown) return; // Не даём спамить вспышкой!
+
+    flashCooldown = true;
     flashTimer = 6;
+
+    // Визуально отключаем кнопку на время перезарядки
+    var fBtn = document.getElementById("flashGameBtn");
+    if (fBtn) {
+        fBtn.disabled = true;
+        fBtn.style.backgroundColor = "#555555";
+        fBtn.style.color = "#cccccc";
+        fBtn.innerHTML = "⏳ ПЕРЕЗАРЯДКА (3 сек.)";
+    }
+
     if (drone && drone.x > 80 && drone.x < 540) {
         drone = null;
         dScore += 5;
     }
+
+    // Возвращаем кнопку через 3 секунды (3000 мс)
+    setTimeout(function() {
+        flashCooldown = false;
+        if (fBtn) {
+            fBtn.disabled = false;
+            fBtn.style.backgroundColor = "#ffffff";
+            fBtn.style.color = "#000000";
+            fBtn.innerHTML = "⚡ ВСПЫШКА ПО ДРОНУ (F)";
+        }
+    }, 3000);
 }
+
 
 function startDino() {
     cancelAnimationFrame(dLoop);
