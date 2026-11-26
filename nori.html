@@ -259,14 +259,23 @@ function noriGameLoop() {
     if (!nRun) return;
     nFrame++;
 
-    var spawnRate = Math.max(32, 75 - Math.floor(nScore / 2));
+       var spawnRate = Math.max(32, 75 - Math.floor(nScore / 2));
     if (nFrame % spawnRate === 0) {
-        var isLeft = Math.random() < 0.5;
-        nEnemies.push({
-            side: isLeft ? "left" : "right",
-            x: isLeft ? 10 : 590
-        });
+        if (Math.random() < 0.25) {
+            // С вероятностью 25% вирусы атакуют с ОБОИХ сторон одновременно!
+            nEnemies.push({ side: "left", x: 10 });
+            nEnemies.push({ side: "right", x: 590 });
+        } else {
+            // В остальных случаях — только с одной стороны
+            var isLeft = Math.random() < 0.5;
+            nEnemies.push({
+                side: isLeft ? "left" : "right",
+                x: isLeft ? 10 : 590
+            });
+        }
     }
+
+
 
     var spd = 2.4 + Math.min(3.5, nScore * 0.04);
 
