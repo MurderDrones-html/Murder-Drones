@@ -123,7 +123,7 @@
     <p id="railText" style="font-size:16px;color:#ffffff;font-family:arial;">
         Заряд: <b>0%</b> (Готов к зарядке)
     </p>
-    <button type="button" onclick="chargeRailgun()" style="background-color:#793EA6;color:#F7D652;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+    <button id="railBtn" type="button" onclick="chargeRailgun()" style="background-color:#793EA6;color:#F7D652;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
         Зарядить рельсотрон ⚡
     </button>
 </td>
@@ -134,28 +134,101 @@
 var uziSound = new Audio("uzi.mp3");
 var charge = Number(localStorage.getItem("uziCharge")) || 0;
 var totalShots = Number(localStorage.getItem("uziTotalShots")) || 0;
-var txt = document.getElementById("railText");
-var railBox = document.getElementById("railBox");
+var cooldownEnd = Number(localStorage.getItem("uziCooldownEnd")) || 0;
+var cooldownType = localStorage.getItem("uziCooldownType") || "";
 
-if (charge === 100) {
-    txt.style.color = "#00ff88";
-    txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми для выстрела! <small style='color:#aaaaaa;'>(Всего выстрелов: " + totalShots + ")</small>";
+var txt = document.getElementById("railText");
+var btn = document.getElementById("railBtn");
+var railBox = document.getElementById("railBox");
+var timerInterval = null;
+
+function setBtnLocked(locked, label) {
+    btn.disabled = locked;
+    btn.innerText = label;
+    if (locked) {
+        btn.style.backgroundColor = "#3a3d4d";
+        btn.style.color = "#888888";
+        btn.style.borderColor = "#555555";
+        btn.style.cursor = "not-allowed";
+    } else {
+        btn.style.backgroundColor = "#793EA6";
+        btn.style.color = "#F7D652";
+        btn.style.borderColor = "#F7D652";
+        btn.style.cursor = "pointer";
+    }
+}
+
+function renderReadyState() {
+    if (charge === 100) {
+        txt.style.color = "#00ff88";
+        txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Оружие готово к выстрелу! <small style='color:#aaaaaa;'>(Всего выстрелов: " + totalShots + ")</small>";
+        setBtnLocked(false, "ОГОНЬ! 💥");
+    } else {
+        txt.style.color = "#ffffff";
+        txt.innerHTML = "Заряд: <b>" + charge + "%</b> <small style='color:#aaaaaa;'>(Всего выстрелов: " + totalShots + ")</small>";
+        setBtnLocked(false, "Зарядить рельсотрон ⚡");
+    }
+}
+
+function startCooldown(durationMs, type) {
+    cooldownEnd = Date.now() + durationMs;
+    cooldownType = type;
+    localStorage.setItem("uziCooldownEnd", cooldownEnd);
+    localStorage.setItem("uziCooldownType", type);
+    runTimer();
+}
+
+function runTimer() {
+    clearInterval(timerInterval);
+
+    function tick() {
+        var left = cooldownEnd - Date.now();
+
+        if (left <= 0) {
+            clearInterval(timerInterval);
+            localStorage.removeItem("uziCooldownEnd");
+            localStorage.removeItem("uziCooldownType");
+            renderReadyState();
+            return;
+        }
+
+        if (cooldownType === "overheat") {
+            var sec = Math.ceil(left / 1000);
+            txt.style.color = "#ff5555";
+            txt.innerHTML = "🔥 <b>ПЕРЕГРЕВ РЕЛЬСОТРОНА!</b> Остывание: <b>" + sec + " сек.</b> <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
+            setBtnLocked(true, "Остывает (" + sec + "с) ⏳");
+        } else {
+            var secDec = (left / 1000).toFixed(1);
+            txt.style.color = "#cccccc";
+            txt.innerHTML = "⚡ Заряд: <b>" + charge + "%</b>... Стабилизация ядра: <b>" + secDec + " сек.</b> <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
+            setBtnLocked(true, "Подожди (" + secDec + "с)...");
+        }
+    }
+
+    tick();
+    timerInterval = setInterval(tick, 100);
+}
+
+// Проверяем при загрузке страницы, не висит ли активный таймер
+if (cooldownEnd > Date.now()) {
+    runTimer();
 } else {
-    txt.innerHTML = "Заряд: <b>" + charge + "%</b> <small style='color:#aaaaaa;'>(Всего выстрелов: " + totalShots + ")</small>";
+    renderReadyState();
 }
 
 function chargeRailgun() {
+    if (Date.now() < cooldownEnd) return;
+
     charge += 25;
 
     if (charge < 100) {
         localStorage.setItem("uziCharge", charge);
-        txt.style.color = "#ffffff";
-        txt.innerHTML = "Заряд: <b>" + charge + "%</b>... Накапливаем энергию... <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
+        startCooldown(3500, "charge"); // 3.5 секунды между кликами зарядки
     } else if (charge === 100) {
         localStorage.setItem("uziCharge", charge);
-        txt.style.color = "#00ff88";
-        txt.innerHTML = "🔋 <b>ЗАРЯД 100%!</b> Нажми ещё раз для выстрела! <small style='color:#aaaaaa;'>(Выстрелов: " + totalShots + ")</small>";
+        startCooldown(3500, "charge"); // 3.5 секунды стабилизации перед выстрелом
     } else {
+        // ВЫСТРЕЛ!
         try { uziSound.currentTime = 0; uziSound.play(); } catch (e) {}
 
         charge = 0;
@@ -174,11 +247,12 @@ function chargeRailgun() {
             railBox.style.borderColor = "#793EA6";
         }, 800);
 
-        txt.style.color = "#F7D652";
-        txt.innerHTML = "💥 <b>БА-БАХ!! BITE ME! (УКУСИ МЕНЯ!)</b> — Всего выстрелов: <b>" + totalShots + "</b>";
+        // Запускаем 30-секундный перегрев
+        startCooldown(30000, "overheat");
     }
 }
 </script>
+
 
 <br><br>
 <div align="left" style="width:850px;">
