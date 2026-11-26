@@ -43,74 +43,74 @@
 </td>
 </tr>
 </table>
-    <br>
+  <br>
 
-<!-- ПАСХАЛКА ТЭДА: БРО-ПОДДЕРЖКА -->
+<!-- ПАСХАЛКА ТЕССЫ: МАСТЕРСКАЯ ЭЛЛИОТТ -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
-    <p style="font-size:18px;color:#000000;background-color:#39FF14;font-family:arial;padding:8px;">
-        <b>&nbsp;🧢 СЧЁТЧИК КРУТИЗНЫ ОТ ТЭДА&nbsp;</b>
+    <p style="font-size:18px;color:#000000;background-color:#F7D652;font-family:arial;padding:8px;">
+        <b>&nbsp;🔧 МАСТЕРСКАЯ ТЕССЫ ЭЛЛИОТТ&nbsp;</b>
     </p>
-    <p id="thadText" style="font-size:16px;color:#ffffff;font-family:arial;">
-        Дано «пять» Тэду: <b>0</b> / 10
+    <p id="tessaText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Починено дронов со свалки: <b>0</b> / 12
     </p>
-    <button id="thadBtn" type="button" onclick="highFiveThad()" style="background-color:#39FF14;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
-        Дать пять Тэду! ✋
+    <button id="tessaBtn" type="button" onclick="fixDroneTessa()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+        Закрутить гайку 🔧
     </button>
 </td>
 </tr>
 </table>
 
 <script>
-var thadFives = Number(localStorage.getItem("thadHighFives")) || 0;
-var isThadBusy = false;
-var tTxt = document.getElementById("thadText");
+var tessaFixes = Number(localStorage.getItem("tessaFixesCount")) || 0;
+var isTessaBusy = false;
+var tsTxt = document.getElementById("tessaText");
 
-if (thadFives >= 10) {
-    tTxt.style.color = "#39FF14";
-    tTxt.innerHTML = "🔥 Дано «пять»: <b>" + thadFives + "</b> — <i>Тэд: «Йоу, бро! Ты официально самый крутой дрон в бункере после Узи!»</i>";
-} else if (thadFives > 0) {
-    tTxt.innerHTML = "Дано «пять» Тэду: <b>" + thadFives + "</b> / 10";
+if (tessaFixes >= 12) {
+    tsTxt.style.color = "#F7D652";
+    tsTxt.innerHTML = "⚙️ Починено дронов: <b>" + tessaFixes + "</b> — <i>Тесса: «Эн, Ви и Джей — мои лучшие друзья. Только держите Син подальше от подвала...»</i>";
+} else if (tessaFixes > 0) {
+    tsTxt.innerHTML = "Починено дронов со свалки: <b>" + tessaFixes + "</b> / 12";
 }
 
-function highFiveThad() {
-    if (isThadBusy) return;
-    isThadBusy = true;
+function fixDroneTessa() {
+    if (isTessaBusy) return;
+    isTessaBusy = true;
 
-    var btn = document.getElementById("thadBtn");
+    var btn = document.getElementById("tessaBtn");
     btn.disabled = true;
     btn.style.backgroundColor = "#555555";
     btn.style.color = "#cccccc";
-    btn.innerHTML = "Йоу, мощно! 🤜🤛";
+    btn.innerHTML = "Тесса паяет провода... ⚡";
 
-    var thadPhrases = [
-        "Тэд: «Классическая Узи — снова спасает всех нас!»",
-        "Тэд: «Эй, Эн! Отличный прикид, приятель!»",
-        "Тэд: «Даже если на нас нападут монстры, мы прорвёмся!»",
-        "Тэд: «Лиззи опять зависает в телефоне, но она нормальная.»",
-        "Тэд: «Мощный удар, бро! Заряд бодрости на 100%!»"
+    var tessaPhrases = [
+        "Тесса: «Ещё один спасённый бедолага со свалки! Держи бантик!»",
+        "Тесса: «Ох, надеюсь родители не увидят, что я снова тащу детали в комнату.»",
+        "Тесса: «Эн, принеси, пожалуйста, гаечный ключ на 10!»",
+        "Тесса: «Эта малышка Син немного странная, но ей просто нужен уход.»",
+        "Тесса: «Костюм астронавта JCJenson немного жмёт, зато защищает от радиации!»"
     ];
 
-    thadFives++;
-    localStorage.setItem("thadHighFives", thadFives);
+    tessaFixes++;
+    localStorage.setItem("tessaFixesCount", tessaFixes);
 
-    if (thadFives >= 10) {
-        tTxt.style.color = "#39FF14";
-        tTxt.innerHTML = "🔥 Дано «пять»: <b>" + thadFives + "</b> — <i>Тэд: «Йоу, бро! Ты официально самый крутой дрон в бункере после Узи!»</i>";
+    if (tessaFixes >= 12) {
+        tsTxt.style.color = "#F7D652";
+        tsTxt.innerHTML = "⚙️ Починено дронов: <b>" + tessaFixes + "</b> — <i>Тесса: «Эн, Ви и Джей — мои лучшие друзья. Только держите Син подальше от подвала...»</i>";
     } else {
-        var line = thadPhrases[Math.floor(Math.random() * thadPhrases.length)];
-        tTxt.style.color = "#ffffff";
-        tTxt.innerHTML = "Дано «пять» Тэду: <b>" + thadFives + "</b> / 10<br><i>" + line + "</i>";
+        var line = tessaPhrases[Math.floor(Math.random() * tessaPhrases.length)];
+        tsTxt.style.color = "#ffffff";
+        tsTxt.innerHTML = "Починено дронов со свалки: <b>" + tessaFixes + "</b> / 12<br><i>" + line + "</i>";
     }
 
     setTimeout(function() {
-        isThadBusy = false;
+        isTessaBusy = false;
         btn.disabled = false;
-        btn.style.backgroundColor = "#39FF14";
+        btn.style.backgroundColor = "#F7D652";
         btn.style.color = "#000000";
-        btn.innerHTML = "Дать пять Тэду! ✋";
-    }, 800);
+        btn.innerHTML = "Закрутить гайку 🔧";
+    }, 1000);
 }
 </script>
 
