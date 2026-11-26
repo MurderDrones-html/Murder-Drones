@@ -123,10 +123,20 @@
 </table>
 
 <script>
-var penClicks = 0;
+// Загружаем сохранённые нажатия на ручку из памяти браузера
+var penClicks = Number(localStorage.getItem("jPenClicks")) || 0;
+var txt = document.getElementById("penText");
+
+if (penClicks >= 10) {
+    txt.innerHTML = "Нажатий: <b>" + penClicks + "</b> — Джей довольна твоей продуктивностью.";
+} else if (penClicks > 0) {
+    txt.innerHTML = "Нажатий на фирменную ручку: <b>" + penClicks + "</b> / 10 (Щёлк!)";
+}
+
 function clickPen() {
     penClicks++;
-    var txt = document.getElementById("penText");
+    // Сохраняем нажатия в память браузера
+    localStorage.setItem("jPenClicks", penClicks);
 
     if (penClicks === 10) {
         txt.style.color = "#F7D652";
@@ -140,6 +150,7 @@ function clickPen() {
     }
 }
 </script>
+
 
 
 <br><br>
