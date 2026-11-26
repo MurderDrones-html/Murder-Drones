@@ -152,9 +152,10 @@
 
     <hr>
 
-    <button onclick="feedMango()" style="background-color:#793EA6;color:#F7D652;font-size:14px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
+        <button id="mangoBtn" onclick="feedMango()" style="background-color:#793EA6;color:#F7D652;font-size:14px;font-weight:bold;padding:10px 20px;border:none;cursor:pointer;font-family:arial;">
         Покормить Син манго 🥭
     </button>
+
 
     <p id="mangoText" style="font-size:15px;color:#ffffff;font-family:arial;margin-top:10px;">
         Съедено манго: 0
@@ -266,7 +267,13 @@ function checkSolver() {
     }, 1500);
 }
     
+var mangoes = Number(localStorage.getItem("cynFedMangoes")) || 0;
+var isEating = false;
+document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b>";
+
 function feedMango() {
+    if (isEating) return;
+
     var phrases = [
         "[Хихикает] Вкусное манго!",
         "Сверхвычислитель доволен. Давай ещё.",
@@ -277,13 +284,30 @@ function feedMango() {
         "Я бы попробовала ето с Человеченой. [Криповый смешок]",
         "Я бы попробовала ето с Маслом. [смешок]"
     ];
+
+    isEating = true;
+    var btn = document.getElementById("mangoBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Син жуёт манго... 🥭";
+
     mangoes = mangoes + 1;
-    // Сохраняем новое число в память браузера
     localStorage.setItem("cynFedMangoes", mangoes);
 
     var randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
     document.getElementById("mangoText").innerHTML = "Съедено манго: <b>" + mangoes + "</b> — <i>" + randomPhrase + "</i>";
+
+    // Через 2.5 секунды (2500 мс) Син доедает и кнопка снова активна
+    setTimeout(function() {
+        isEating = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#793EA6";
+        btn.style.color = "#F7D652";
+        btn.innerHTML = "Покормить Син манго 🥭";
+    }, 2500);
 }
+
 </script>
 
 
