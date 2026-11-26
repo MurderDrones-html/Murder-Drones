@@ -43,6 +43,78 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ПАСХАЛКА ДОЛЛ: ТЕЛЕКИНЕЗ И НОЖИ -->
+<table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
+<tr>
+<td align="center">
+    <p style="font-size:18px;color:#ffffff;background-color:#990000;font-family:arial;padding:8px;">
+        <b>&nbsp;🔪 ПРОТОКОЛ МЕСТИ ДОЛЛ (ABSOLUTE SOLVER)&nbsp;</b>
+    </p>
+    <p id="dollText" style="font-size:16px;color:#ffffff;font-family:arial;">
+        Призвано ножей телекинезом: <b>0</b> / 15
+    </p>
+    <button id="dollBtn" type="button" onclick="throwDollKnife()" style="background-color:#cc0000;color:#ffffff;font-size:16px;font-weight:bold;padding:12px 24px;border:2px solid #F7D652;cursor:pointer;font-family:arial;">
+        Призвать нож 🔪
+    </button>
+</td>
+</tr>
+</table>
+
+<script>
+var dollKnives = Number(localStorage.getItem("dollKnivesCount")) || 0;
+var isDollBusy = false;
+var dTxt = document.getElementById("dollText");
+
+if (dollKnives >= 15) {
+    dTxt.style.color = "#ff4444";
+    dTxt.innerHTML = "🩸 Призвано ножей: <b>" + dollKnives + "</b> — <i>Долл: «Ви заплатит за всё. Но тебе я помогу найти ключ-жука...»</i>";
+} else if (dollKnives > 0) {
+    dTxt.innerHTML = "Призвано ножей телекинезом: <b>" + dollKnives + "</b> / 15";
+}
+
+function throwDollKnife() {
+    if (isDollBusy) return;
+    isDollBusy = true;
+
+    var btn = document.getElementById("dollBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.innerHTML = "Перезарядка символа... ☣️";
+
+    document.body.style.backgroundColor = "#3b0000";
+    setTimeout(function() { document.body.style.backgroundColor = "#0b0c10"; }, 200);
+
+    var dollPhrases = [
+        "Долл: «Я сделаю это сама.»",
+        "Долл: «Как и мои родители... они не заслужили этого.»",
+        "Долл: «Ты не знаешь, что скрывается в лаборатории Кэбин Фивер.»",
+        "Долл: «[ОШИБКА: ПЕРЕГРЕВ СИСТЕМЫ]»",
+        "Долл: «Узи, ты даже не представляешь, чем мы заражены.»"
+    ];
+
+    dollKnives++;
+    localStorage.setItem("dollKnivesCount", dollKnives);
+
+    if (dollKnives >= 15) {
+        dTxt.style.color = "#ff4444";
+        dTxt.innerHTML = "🩸 Призвано ножей: <b>" + dollKnives + "</b> — <i>Долл: «Ви заплатит за всё. Но тебе я помогу найти ключ-жука...»</i>";
+    } else {
+        var line = dollPhrases[Math.floor(Math.random() * dollPhrases.length)];
+        dTxt.style.color = "#ffffff";
+        dTxt.innerHTML = "Призвано ножей телекинезом: <b>" + dollKnives + "</b> / 15<br><i>" + line + "</i>";
+    }
+
+    setTimeout(function() {
+        isDollBusy = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#cc0000";
+        btn.innerHTML = "Призвать нож 🔪";
+    }, 1000);
+}
+</script>
+
 
 <br><br>
 <div align="left"><a href="index.html"><p style="font-size:20px;color:#F7D652;font-family:arial;"><b>HOME</b></p></a></div>
