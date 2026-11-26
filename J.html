@@ -106,7 +106,9 @@
 </table>
     <br>
 
-<!-- ПАСХАЛКА ДЖЕЙ: РУЧКА JCJENSON -->
+<br>
+
+<!-- ПАСХАЛКА ДЖЕЙ: РУЧКА JCJENSON С КУЛДАУНОМ 0.5 СЕК -->
 <table width="850" border="1" cellpadding="20" cellspacing="0" bgcolor="181a24">
 <tr>
 <td align="center">
@@ -116,7 +118,7 @@
     <p id="penText" style="font-size:16px;color:#ffffff;font-family:arial;">
         Нажатий на фирменную ручку: <b>0</b>
     </p>
-    <button type="button" onclick="clickPen()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
+    <button id="penBtn" type="button" onclick="clickPen()" style="background-color:#F7D652;color:#000000;font-size:16px;font-weight:bold;padding:12px 24px;border:none;cursor:pointer;font-family:arial;">
         Пощёлкать ручкой JCJenson 🖊️
     </button>
 </td>
@@ -126,6 +128,7 @@
 <script>
 var jSound = new Audio("j.mp3");
 var penClicks = Number(localStorage.getItem("jPenClicks")) || 0;
+var isPenClicking = false;
 var txt = document.getElementById("penText");
 
 if (penClicks >= 10) {
@@ -135,8 +138,16 @@ if (penClicks >= 10) {
 }
 
 function clickPen() {
-    // ИГРАЕМ ЗВУК ЩЕЛЧКА РУЧКИ!
+    if (isPenClicking) return;
+
     try { jSound.currentTime = 0; jSound.play(); } catch (e) {}
+
+    isPenClicking = true;
+    var btn = document.getElementById("penBtn");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#555555";
+    btn.style.color = "#cccccc";
+    btn.innerHTML = "Щёлк... 🖊️";
 
     penClicks++;
     localStorage.setItem("jPenClicks", penClicks);
@@ -151,8 +162,18 @@ function clickPen() {
         txt.style.color = "#ffffff";
         txt.innerHTML = "Нажатий на фирменную ручку: <b>" + penClicks + "</b> / 10 (Щёлк!)";
     }
+
+    // Кулдаун 0.5 секунды (500 мс)
+    setTimeout(function() {
+        isPenClicking = false;
+        btn.disabled = false;
+        btn.style.backgroundColor = "#F7D652";
+        btn.style.color = "#000000";
+        btn.innerHTML = "Пощёлкать ручкой JCJenson 🖊️";
+    }, 500);
 }
 </script>
+
 
 
 
