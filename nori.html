@@ -83,7 +83,49 @@
 </td>
 </tr>
 </table>
+    <br>
+
+<!-- ТАБЛИЦА РЕКОРДОВ НОРИ (ЗАЩИТНИКИ ЯДРА) -->
+<table width="850" border="1" cellpadding="15" cellspacing="0" bgcolor="151824">
+<tr>
+<td align="center">
+
+    <p style="font-size:18px;color:#F7D652;background-color:#793EA6;font-family:arial;padding:8px;margin-top:0;">
+        <b>🦀 ТОП ЗАЩИТНИКОВ ЯДРА НОРИ (<span id="noriTopCount">0</span>)</b>
+    </p>
+
+    <p style="font-size:13px;color:#cccccc;font-family:arial;">
+        Отрази максимум атак вирусов Син и скинь скрин своего рекорда в наш Discord!
+    </p>
+
+    <table width="100%" border="1" cellpadding="8" cellspacing="0" bgcolor="181a24">
+    <tr bgcolor="13151d">
+        <td width="15%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>#</b></p></td>
+        <td width="55%"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Ник в Discord</b></p></td>
+        <td width="30%" align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Отражено атак</b></p></td>
+    </tr>
+
+    <!-- 1 МЕСТО (АДМИН) -->
+    <tr class="nori-row">
+        <td align="center"><p style="font-size:14px;color:#ffffff;font-family:arial;margin:0;"><b>1</b></p></td>
+        <td><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>Создатель сайта (Админ)</b></p></td>
+        <td align="center"><p style="font-size:14px;color:#F7D652;font-family:arial;margin:0;"><b>50 🦀</b></p></td>
+    </tr>
+
+    <!-- ПУСТОЕ МЕСТО ДЛЯ ИГРОКОВ -->
+    <tr>
+        <td align="center"><p style="font-size:14px;color:#aaaaaa;font-family:arial;margin:0;">2</p></td>
+        <td><p style="font-size:14px;color:#aaaaaa;font-family:arial;margin:0;"><i>Место свободно...</i></p></td>
+        <td align="center"><p style="font-size:14px;color:#aaaaaa;font-family:arial;margin:0;">0 🦀</p></td>
+    </tr>
+    </table>
+
+</td>
+</tr>
+</table>
+
 <script>
+    document.getElementById("noriTopCount").innerText = document.querySelectorAll(".nori-row").length;
 var nc = document.getElementById("noriCanvas"), nctx = nc.getContext("2d");
 
 // Загружаем твою настоящую картинку Нори из папки!
